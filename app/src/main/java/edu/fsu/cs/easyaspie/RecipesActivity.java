@@ -1,6 +1,7 @@
 package edu.fsu.cs.easyaspie;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class RecipesActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
     RecipesAdapter adapter;
+    RecipesProvider recipeProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +37,30 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
                         .setAction("Action", null).show();*/
             }
         });
+
+        recipeProvider = new RecipesProvider();
+
         ArrayList<String> foodNames = new ArrayList<>();
-        foodNames.add("Spaghetti");
+
+        Cursor myCursor = recipeProvider.query(
+                RecipesProvider.RecipesURI,
+                null,
+                null,
+                null,
+                null);
+
+        myCursor.moveToFirst();
+
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            foodNames.add(myCursor.getString(1));
+            myCursor.moveToNext();
+        }
+
+        /*foodNames.add("Spaghetti");
         foodNames.add("Chicken");
         foodNames.add("Salad");
         foodNames.add("Pie");
-        foodNames.add("Cake");
+        foodNames.add("Cake");*/
 
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recipes_recyclerview);
