@@ -17,6 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name=".RecipesProvider"
+            android:authorities="edu.fsu.cs.easyaspie.RecipesProvider"
+            android:exported="false"
+            android:readPermission=""
+            android:writePermission="" />
     </application>
-
 </manifest>
