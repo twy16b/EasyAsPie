@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddRecipeActivity"></activity>
+        <activity android:name=".RecipeSteps"></activity>
+        <activity android:name=".AddRecipeActivity" />
         <activity android:name=".RecipesActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -18,6 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name=".RecipesProvider"
             android:authorities="edu.fsu.cs.easyaspie.RecipesProvider"
@@ -25,4 +27,5 @@
             android:readPermission=""
             android:writePermission="" />
     </application>
+
 </manifest>
