@@ -1,5 +1,6 @@
 package edu.fsu.cs.easyaspie;
 
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHolder> {
+public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
 
     private List<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    RecipesAdapter(Context context, List<String> data) {
+    IngredientsAdapter(Context context, List<String> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -32,8 +33,8 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String recipe = mData.get(position);
-        holder.myTextView.setText(recipe);
+        String ingredient = mData.get(position);
+        holder.myTextView.setText(ingredient);
     }
 
     // total number of rows

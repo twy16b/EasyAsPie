@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Easy As Pie</string>
+    <string-array name="array_units">
+        <item>Whole</item>
+        <item>Teaspoon</item>
+        <item>Tablespoon</item>
+        <item>Fluid ounce</item>
+        <item>Cup</item>
+        <item>Pint</item>
+        <item>Quart</item>
+        <item>Pinch</item>
+        <item>Dash</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

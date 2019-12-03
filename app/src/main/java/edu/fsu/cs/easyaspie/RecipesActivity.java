@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class RecipesActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
-    RecipesAdapter adapter;
+    RecipesAdapter mRecipesAdapter;
     RecipesProvider recipeProvider;
 
     @Override
@@ -33,8 +33,6 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             public void onClick(View view) {
                 Intent myIntent = new Intent(RecipesActivity.this, AddRecipeActivity.class);
                 RecipesActivity.this.startActivity(myIntent);
-                /*Snackbar.make(view, "Add button clicked", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
             }
         });
 
@@ -56,23 +54,18 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             myCursor.moveToNext();
         }
 
-        /*foodNames.add("Spaghetti");
-        foodNames.add("Chicken");
-        foodNames.add("Salad");
-        foodNames.add("Pie");
-        foodNames.add("Cake");*/
-
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recipes_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new RecipesAdapter(this, foodNames);
-        adapter.setClickListener(this);
-        recyclerView.setAdapter(adapter);
+        mRecipesAdapter = new RecipesAdapter(this, foodNames);
+        mRecipesAdapter.setClickListener(this);
+        recyclerView.setAdapter(mRecipesAdapter);
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        Snackbar.make(view, "You clicked " + adapter.getItem(position) + " on row number " + position, Snackbar.LENGTH_LONG)
+        // TODO: open AddRecipeActivity for the correct recipe
+        Snackbar.make(view, "You clicked " + mRecipesAdapter.getItem(position) + " on row number " + position, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
 }
