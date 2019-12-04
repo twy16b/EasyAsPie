@@ -9,7 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RecipeSteps"></activity>
+        <receiver
+            android:name=".TimerReciever"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <service
+            android:name=".StartTimerService"
+            android:exported="false" />
+
+        <activity android:name=".RecipeSteps" />
         <activity android:name=".RecipeActivity" />
         <activity android:name=".RecipeListActivity" />
         <activity android:name=".MainActivity">
