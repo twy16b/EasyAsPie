@@ -35,6 +35,9 @@ public class RecipeActivity extends AppCompatActivity {
     ArrayList<String> RecipeIngredients;
     ArrayList<String> RecipeSteps;
 
+    Button addIngredient;
+    Button addStep;
+
     RecipesProvider recipeProvider;
     LayoutInflater li;
     AlertDialog.Builder alertDialogBuilder;
@@ -51,6 +54,8 @@ public class RecipeActivity extends AppCompatActivity {
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
         EditRecipeName = findViewById(R.id.edit_name);
+        addIngredient = findViewById(R.id.button_add_ingredient);
+        addStep = findViewById(R.id.button_add_step);
         recipeProvider = new RecipesProvider();
         FloatingActionButton fab = findViewById(R.id.fab);
 
@@ -58,6 +63,8 @@ public class RecipeActivity extends AppCompatActivity {
         recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
             //No recipe from intent, new recipe mode
+            addIngredient.setVisibility(addIngredient.VISIBLE);
+            addStep.setVisibility(addStep.VISIBLE);
             fab.setImageResource(android.R.drawable.ic_menu_save);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -148,8 +155,6 @@ public class RecipeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     //TODO: Set to change the layout to edit mode
-                    Button addIngredient = findViewById(R.id.button_add_ingredient);
-                    Button addStep = findViewById(R.id.button_add_step);
                     addIngredient.setVisibility(view.VISIBLE);
                     addStep.setVisibility(view.VISIBLE);
                 }
