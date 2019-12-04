@@ -202,6 +202,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     newIngredient.put("ingredient", quantityInput+" "+unitInput+" "+ingredientInput);
                                     newIngredient.put("recipeID", recipeID);
                                     recipeProvider.insert(RecipesProvider.IngredientsURI, newIngredient);
+                                    RecipeIngredients.add(quantityInput+" "+unitInput+" "+ingredientInput);
                                     alertDialog.dismiss();
                                 }
                                 if (quantityInput.isEmpty()) {
@@ -273,11 +274,17 @@ public class RecipeActivity extends AppCompatActivity {
                                 }
                                 else {
                                     // convert all time to seconds
+                                    String stepDirections = editStep.getText().toString();
                                     int totalSeconds = Integer.parseInt(hourSpinner.getSelectedItem().toString()) * 60 * 60
                                             + Integer.parseInt(minuteSpinner.getSelectedItem().toString()) * 60
                                             + Integer.parseInt(secondSpinner.getSelectedItem().toString());
                                     // TODO: add input to database and to IngredientsAdapter
-                                    stepsRecyclerView.setVisibility(View.VISIBLE); // display recycler view
+                                    ContentValues newStep = new ContentValues();
+                                    newStep.put("directions", stepDirections);
+                                    newStep.put("time", totalSeconds);
+                                    newStep.put("recipeID", recipeID);
+                                    recipeProvider.insert(RecipesProvider.StepsURI, newStep);
+                                    RecipeSteps.add(stepDirections);
                                     alertDialog.dismiss();
                                 }
                             }
@@ -288,10 +295,11 @@ public class RecipeActivity extends AppCompatActivity {
                 break;
             case R.id.button_begin_recipe:
                 //if (ingredients recyclerview is empty or steps recyclerview is empty) {
+                if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
                 Snackbar.make(v, "Need at least one step and one ingredient before " +
                         "beginning activity_recipe.", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                //}
+                }
                 if (EditRecipeName.getText().toString().isEmpty()) {
                     EditRecipeName.setError("This field can not be blank");
                 }
