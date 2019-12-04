@@ -24,7 +24,7 @@ public class TimerReciever extends BroadcastReceiver {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Easy as Pie")
                 .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                 .setContentTitle(recipeName)
-                .setContentText("Time's up!")
+                .setContentText("Time's Up!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);

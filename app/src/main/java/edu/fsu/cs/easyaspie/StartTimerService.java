@@ -50,33 +50,33 @@ public class StartTimerService extends IntentService {
 
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-            Calendar currtime = Calendar.getInstance();
-            Calendar alarmtime = Calendar.getInstance();
-            alarmtime.setTimeInMillis(currtime.getTimeInMillis() + time);
+            Calendar calendar = Calendar.getInstance();
+
+            long currtime = calendar.getTimeInMillis();
+            long alarmtime = currtime + time;
+
             Intent i = new Intent(this, TimerReciever.class);
 
             i.putExtra("recipeName", recipeName);
             i.putExtra("stepNumber", stepNumber);
-            i.putExtra("notificationId", currtime.getTimeInMillis());
+            i.putExtra("notificationId", currtime);
 
             //creating a pending intent using the intent
             PendingIntent pi = PendingIntent.getBroadcast(this, tick, i, 0);
 
-            am.set(AlarmManager.RTC_WAKEUP, alarmtime.getTimeInMillis(), pi);
-
-            Toast.makeText(getBaseContext(), "notifficationId sent: " + currtime.getTimeInMillis(), Toast.LENGTH_SHORT).show();
+            am.set(AlarmManager.RTC_WAKEUP, alarmtime, pi);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step: " + stepNumber + " timer started")
+                    .setContentText("Step " + stepNumber + ": Timer started for " + time/1000 + " seconds.")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             createNotificationChannel();
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getBaseContext());
 
-            notificationManager.notify((int) currtime.getTimeInMillis(), builder.build());
+            notificationManager.notify((int) currtime, builder.build());
 
 
         }
