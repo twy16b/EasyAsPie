@@ -31,7 +31,7 @@ public class RecipesProvider extends ContentProvider {
                     " _ID INTEGER PRIMARY KEY, " +
                     "directions TEXT, " +
                     "time INTEGER, " +
-                    "recipeID REFERENCES Recipes(_ID))";
+                    "recipeID INTEGER)";
 
 
     public static final Uri RecipesURI = Uri.parse("content://edu.fsu.cs.easyaspie.RecipeProvider/recipes");

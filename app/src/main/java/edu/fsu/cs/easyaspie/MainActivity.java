@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
         newRecipe.put("name", "Spaghetti");
         newRecipe.put("ingredients", "Spaghetti ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+        ContentValues newStep = new ContentValues();
+        newStep.put("directions", "Cook Pasta");
+        newStep.put("time", "15");
+        newStep.put("recipeID", "1");
+        recipeProvider.insert(RecipesProvider.StepsURI, newStep);
         newRecipe.put("name", "Chicken");
         newRecipe.put("ingredients", "Chicken ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.button_recipes:
-                Intent myIntent = new Intent(MainActivity.this, RecipesActivity.class);
+                Intent myIntent = new Intent(MainActivity.this, RecipeListActivity.class);
                 MainActivity.this.startActivity(myIntent);
                 break;
             case R.id.button_grocery:

@@ -8,7 +8,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +15,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-public class RecipesActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
+public class RecipeListActivity extends AppCompatActivity implements RecipesAdapter.ItemClickListener {
 
     RecipesAdapter mRecipesAdapter;
     RecipesProvider recipeProvider;
@@ -25,18 +24,21 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Recipes");
-        setContentView(R.layout.activity_recipes);
+        setContentView(R.layout.activity_recipes_list);
+        recipeProvider = new RecipesProvider();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(RecipesActivity.this, AddRecipeActivity.class);
-                RecipesActivity.this.startActivity(myIntent);
+                Intent myIntent = new Intent(RecipeListActivity.this, RecipeActivity.class);
+                RecipeListActivity.this.startActivity(myIntent);
             }
         });
-
-        recipeProvider = new RecipesProvider();
 
         ArrayList<String> foodNames = new ArrayList<>();
 
@@ -64,8 +66,11 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
 
     @Override
     public void onItemClick(View view, int position) {
-        // TODO: open AddRecipeActivity for the correct recipe
+        // TODO: open RecipeActivity for the correct recipe
         Snackbar.make(view, "You clicked " + mRecipesAdapter.getItem(position) + " on row number " + position, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+        Intent intent = new Intent(RecipeListActivity.this, RecipeActivity.class);
+        intent.putExtra("recipeID", position+1);
+        startActivity(intent);
     }
 }
