@@ -18,27 +18,27 @@ public class MainActivity extends AppCompatActivity {
 
         recipeProvider = new RecipesProvider();
         recipeProvider.delete(RecipesProvider.RecipesURI, null, null);
+        recipeProvider.delete(RecipesProvider.IngredientsURI, null, null);
         recipeProvider.delete(RecipesProvider.StepsURI, null, null);
         ContentValues newRecipe = new ContentValues();
         newRecipe.put("name", "Spaghetti");
-        newRecipe.put("ingredients", "Spaghetti ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+        ContentValues newIngredient = new ContentValues();
+        newIngredient.put("ingredient", "Spaghetti ingredient");
+        newIngredient.put("recipeID", "1");
+        recipeProvider.insert(RecipesProvider.IngredientsURI, newIngredient);
         ContentValues newStep = new ContentValues();
         newStep.put("directions", "Cook Pasta");
-        newStep.put("time", "15");
+        newStep.put("time", "900");
         newStep.put("recipeID", "1");
         recipeProvider.insert(RecipesProvider.StepsURI, newStep);
         newRecipe.put("name", "Chicken");
-        newRecipe.put("ingredients", "Chicken ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Salad");
-        newRecipe.put("ingredients", "Salad ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Pie");
-        newRecipe.put("ingredients", "Pie ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Cake");
-        newRecipe.put("ingredients", "Cake ingredients");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
     }
 

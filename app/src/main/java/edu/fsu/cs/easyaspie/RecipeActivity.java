@@ -26,6 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeActivity extends AppCompatActivity {
+
+    final String TAG = "RecipeActivity";
+    int recipeID;
+
     EditText EditRecipeName;
     String RecipeName;
     ArrayList<String> RecipeIngredients;
@@ -51,7 +55,7 @@ public class RecipeActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
 
         Intent intent = getIntent();
-        final int recipeID = intent.getIntExtra("recipeID", 0);
+        recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
             //No recipe from intent, new recipe mode
             fab.setImageResource(android.R.drawable.ic_menu_save);
@@ -66,10 +70,18 @@ public class RecipeActivity extends AppCompatActivity {
 
                         ContentValues newRecipe = new ContentValues();
                         newRecipe.put("name", EditRecipeName.getText().toString());
-                        newRecipe.put("ingredients", EditRecipeName.getText().toString() + " ingredients");
                         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
                         finish();
                     }
+
+                    Cursor myCursor = recipeProvider.query(
+                            RecipesProvider.RecipesURI,
+                            null,
+                            null,
+                            null,
+                            null);
+                    recipeID = myCursor.getCount();
+
                 }
             });
         }
@@ -84,20 +96,36 @@ public class RecipeActivity extends AppCompatActivity {
                     null,
                     selection,
                     selectionArgs1,
-                    null);
+                    "_ID");
             myCursor.moveToFirst();
             RecipeName = myCursor.getString(1);
             RecipeIngredients = new ArrayList<>();
-            RecipeIngredients.add(myCursor.getString(2));
+            RecipeIngredients.add(myCursor.getString(1));
 
             selection = "recipeID = ?";
             String [] selectionArgs2 = { "" + recipeID };
             myCursor = recipeProvider.query(
-                    RecipesProvider.StepsURI,
+                    RecipesProvider.IngredientsURI,
                     null,
                     selection,
                     selectionArgs2,
-                    null);
+                    "_ID");
+            myCursor.moveToFirst();
+            RecipeIngredients = new ArrayList<>();
+            for(int i = 0; i < myCursor.getCount(); ++i) {
+                Log.d(TAG, "onCreate: Add ingredient " + myCursor.getString(1));
+                RecipeIngredients.add(myCursor.getString(1));
+                myCursor.moveToNext();
+            }
+
+            selection = "recipeID = ?";
+            String [] selectionArgs3 = { "" + recipeID };
+            myCursor = recipeProvider.query(
+                    RecipesProvider.StepsURI,
+                    null,
+                    selection,
+                    selectionArgs3,
+                    "_ID");
             myCursor.moveToFirst();
             RecipeSteps = new ArrayList<>();
             for(int i = 0; i < myCursor.getCount(); ++i) {
@@ -120,7 +148,10 @@ public class RecipeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     //TODO: Set to change the layout to edit mode
-
+                    Button addIngredient = findViewById(R.id.button_add_ingredient);
+                    Button addStep = findViewById(R.id.button_add_step);
+                    addIngredient.setVisibility(view.VISIBLE);
+                    addStep.setVisibility(view.VISIBLE);
                 }
             });
         }
@@ -162,7 +193,10 @@ public class RecipeActivity extends AppCompatActivity {
                                 String ingredientInput = editIngredient.getText().toString();
                                 if (!quantityInput.isEmpty() && !ingredientInput.isEmpty()) {
                                     // TODO: add input to database and to StepsAdapter
-                                    ingredientsRecyclerView.setVisibility(View.VISIBLE); // display recycler view
+                                    ContentValues newIngredient = new ContentValues();
+                                    newIngredient.put("ingredient", quantityInput+" "+unitInput+" "+ingredientInput);
+                                    newIngredient.put("recipeID", recipeID);
+                                    recipeProvider.insert(RecipesProvider.IngredientsURI, newIngredient);
                                     alertDialog.dismiss();
                                 }
                                 if (quantityInput.isEmpty()) {

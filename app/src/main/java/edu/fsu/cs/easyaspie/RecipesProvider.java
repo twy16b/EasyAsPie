@@ -14,20 +14,26 @@ public class RecipesProvider extends ContentProvider {
     public static final int DBVERSION = 1;
     public final static String DBNAME = "RecipeProvider";
     public final static String TABLENAME_1 = "Recipes";
-    public final static String TABLENAME_2 = "Steps";
+    public final static String TABLENAME_2 = "Ingredients";
+    public final static String TABLENAME_3 = "Steps";
 
     //Most of this code is from Lecture 10 slides
 
     private static MainDatabaseHelper mOpenHelper;
 
     private static final String SQL_CREATE_TABLE_1 =
-            "CREATE TABLE Recipes (" +
+            "CREATE TABLE "+TABLENAME_1+" (" +
                     " _ID INTEGER PRIMARY KEY, " +
-                    "name TEXT, " +
-                    "ingredients TEXT)";
+                    "name TEXT)";
 
     private static final String SQL_CREATE_TABLE_2 =
-            "CREATE TABLE Steps (" +
+            "CREATE TABLE "+TABLENAME_2+" (" +
+                    " _ID INTEGER PRIMARY KEY, " +
+                    "ingredient TEXT, " +
+                    "recipeID INTEGER)";
+
+    private static final String SQL_CREATE_TABLE_3 =
+            "CREATE TABLE "+TABLENAME_3+" (" +
                     " _ID INTEGER PRIMARY KEY, " +
                     "directions TEXT, " +
                     "time INTEGER, " +
@@ -35,6 +41,7 @@ public class RecipesProvider extends ContentProvider {
 
 
     public static final Uri RecipesURI = Uri.parse("content://edu.fsu.cs.easyaspie.RecipeProvider/recipes");
+    public static final Uri IngredientsURI = Uri.parse("content://edu.fsu.cs.easyaspie.RecipeProvider/ingredients");
     public static final Uri StepsURI = Uri.parse("content://edu.fsu.cs.easyaspie.RecipeProvider/steps");
 
     protected static final class MainDatabaseHelper
@@ -48,6 +55,7 @@ public class RecipesProvider extends ContentProvider {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_TABLE_1);
             db.execSQL(SQL_CREATE_TABLE_2);
+            db.execSQL(SQL_CREATE_TABLE_3);
         }
 
         @Override
@@ -68,9 +76,12 @@ public class RecipesProvider extends ContentProvider {
         if(uriString.contains("recipes")) id = mOpenHelper
                 .getWritableDatabase()
                 .insert(TABLENAME_1, null, values);
-        else if(uriString.contains("steps")) id = mOpenHelper
+        else if(uriString.contains("ingredients")) id = mOpenHelper
                 .getWritableDatabase()
                 .insert(TABLENAME_2, null, values);
+        else if(uriString.contains("steps")) id = mOpenHelper
+                .getWritableDatabase()
+                .insert(TABLENAME_3, null, values);
         else id = -1;
         uri = Uri.withAppendedPath(uri, "" + id);
         return uri;
@@ -84,10 +95,14 @@ public class RecipesProvider extends ContentProvider {
             return mOpenHelper
                     .getWritableDatabase()
                     .update(TABLENAME_1, values, selection, selectionArgs);
-        else if(uriString.contains("steps"))
+        else if(uriString.contains("ingredients"))
             return mOpenHelper
                     .getWritableDatabase()
                     .update(TABLENAME_2, values, selection, selectionArgs);
+        else if(uriString.contains("steps"))
+            return mOpenHelper
+                    .getWritableDatabase()
+                    .update(TABLENAME_3, values, selection, selectionArgs);
         else return -1;
     }
 
@@ -98,10 +113,14 @@ public class RecipesProvider extends ContentProvider {
             return mOpenHelper
                     .getWritableDatabase()
                     .delete(TABLENAME_1, selection, selectionArgs);
-        else if(uriString.contains("steps"))
+        else if(uriString.contains("ingredients"))
             return mOpenHelper
                     .getWritableDatabase()
                     .delete(TABLENAME_2, selection, selectionArgs);
+        else if(uriString.contains("steps"))
+            return mOpenHelper
+                    .getWritableDatabase()
+                    .delete(TABLENAME_3, selection, selectionArgs);
         else return -1;
     }
 
@@ -114,10 +133,15 @@ public class RecipesProvider extends ContentProvider {
                     .getReadableDatabase()
                     .query(TABLENAME_1, projection, selection, selectionArgs, null,
                             null, sortOrder);
-        else if(uriString.contains("steps"))
+        else if(uriString.contains("ingredients"))
             return mOpenHelper
                     .getReadableDatabase()
                     .query(TABLENAME_2, projection, selection, selectionArgs, null,
+                            null, sortOrder);
+        else if(uriString.contains("steps"))
+            return mOpenHelper
+                    .getReadableDatabase()
+                    .query(TABLENAME_3, projection, selection, selectionArgs, null,
                             null, sortOrder);
         else return null;
     }
