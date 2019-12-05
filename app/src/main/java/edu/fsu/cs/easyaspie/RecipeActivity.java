@@ -74,6 +74,15 @@ public class RecipeActivity extends AppCompatActivity {
         RecipeSteps = new ArrayList<>();
         StepsToInsert = new ArrayList<>();
 
+        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+
+
         Intent intent = getIntent();
         recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
@@ -82,46 +91,6 @@ public class RecipeActivity extends AppCompatActivity {
             startEditMode();
         }
         else{
-            //Query Recipe Information
-            String selection = "_ID = ?";
-            String[] selectionArgs1 = { "" + recipeID };
-            Cursor myCursor = recipeProvider.query(
-                    RecipesProvider.RecipesURI,
-                    null,
-                    selection,
-                    selectionArgs1,
-                    "_ID");
-            myCursor.moveToFirst();
-            RecipeName = myCursor.getString(1);
-
-            selection = "recipeID = ?";
-            String [] selectionArgs2 = { "" + recipeID };
-            myCursor = recipeProvider.query(
-                    RecipesProvider.IngredientsURI,
-                    null,
-                    selection,
-                    selectionArgs2,
-                    "_ID");
-            myCursor.moveToFirst();
-            for(int i = 0; i < myCursor.getCount(); ++i) {
-                Log.d(TAG, "onCreate: Add ingredient " + myCursor.getString(1));
-                RecipeIngredients.add(myCursor.getString(1));
-                myCursor.moveToNext();
-            }
-
-            selection = "recipeID = ?";
-            String [] selectionArgs3 = { "" + recipeID };
-            myCursor = recipeProvider.query(
-                    RecipesProvider.StepsURI,
-                    null,
-                    selection,
-                    selectionArgs3,
-                    "_ID");
-            myCursor.moveToFirst();
-            for(int i = 0; i < myCursor.getCount(); ++i) {
-                RecipeSteps.add(myCursor.getString(1));
-                myCursor.moveToNext();
-            }
             startDisplayMode();
         }
     }
@@ -187,6 +156,14 @@ public class RecipeActivity extends AppCompatActivity {
                         ContentValues newRecipe = new ContentValues();
                         newRecipe.put("name", EditRecipeName.getText().toString());
                         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+                        for (int i = 0; i < IngredientsToInsert.size(); ++i) {
+                            ContentValues insertIngredient = IngredientsToInsert.get(i);
+                            recipeProvider.insert(RecipesProvider.IngredientsURI, insertIngredient);
+                        }
+                        for (int i = 0; i < StepsToInsert.size(); ++i) {
+                            ContentValues insertStep = StepsToInsert.get(i);
+                            recipeProvider.insert(RecipesProvider.StepsURI, insertStep);
+                        }
                         startDisplayMode();
                     }
                 }
@@ -203,15 +180,45 @@ public class RecipeActivity extends AppCompatActivity {
         fab.setImageResource(android.R.drawable.ic_menu_edit);
 
         //Display Recipe Information
+        String selection = "_ID = ?";
+        String[] selectionArgs1 = { "" + recipeID };
+        Cursor myCursor = recipeProvider.query(
+                RecipesProvider.RecipesURI,
+                null,
+                selection,
+                selectionArgs1,
+                "_ID");
+        myCursor.moveToFirst();
+        RecipeName = myCursor.getString(1);
         textRecipeName.setText(RecipeName);
 
-        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
-        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+        selection = "recipeID = ?";
+        String [] selectionArgs2 = { "" + recipeID };
+        myCursor = recipeProvider.query(
+                RecipesProvider.IngredientsURI,
+                null,
+                selection,
+                selectionArgs2,
+                "_ID");
+        myCursor.moveToFirst();
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            RecipeIngredients.add(myCursor.getString(1));
+            myCursor.moveToNext();
+        }
 
-        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
-        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+        selection = "recipeID = ?";
+        String [] selectionArgs3 = { "" + recipeID };
+        myCursor = recipeProvider.query(
+                RecipesProvider.StepsURI,
+                null,
+                selection,
+                selectionArgs3,
+                "_ID");
+        myCursor.moveToFirst();
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            RecipeSteps.add(myCursor.getString(1) + " for " + myCursor.getString(2) + " seconds");
+            myCursor.moveToNext();
+        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,7 +349,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     newStep.put("time", totalSeconds);
                                     newStep.put("recipeID", recipeID);
                                     StepsToInsert.add(newStep);
-                                    RecipeSteps.add(stepDirections);
+                                    RecipeSteps.add(stepDirections + " for " + totalSeconds + " seconds");
                                     alertDialog.dismiss();
                                 }
                             }
