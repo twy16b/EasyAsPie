@@ -95,7 +95,7 @@ public class StartTimerService extends IntentService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step " + stepNumber+1 + ": Timer rings at " + hour + ":" + minutestr)
+                    .setContentText("Step " + (stepNumber + 1) + ": Timer rings at " + hour + ":" + minutestr)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setOngoing(false)
                     .setOnlyAlertOnce(true);
