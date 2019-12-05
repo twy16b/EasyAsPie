@@ -206,8 +206,6 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void startDisplayMode() {
-        setTitle(EditRecipeName.getText().toString() + " Recipe");
-
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
@@ -412,8 +410,7 @@ public class RecipeActivity extends AppCompatActivity {
             case R.id.button_begin_recipe:
                 //if (ingredients recyclerview is empty or steps recyclerview is empty) {
                 if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
-                    Snackbar.make(v, "Need at least one step and one ingredient before " +
-                            "beginning activity_recipe.", Snackbar.LENGTH_LONG)
+                    Snackbar.make(v, "Need at least one step and one ingredient before starting recipe.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
                 else {
