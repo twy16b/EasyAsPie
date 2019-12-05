@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> {
+public class RecipeInfoAdapter extends RecyclerView.Adapter<RecipeInfoAdapter.ViewHolder> {
 
     private List<String> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    StepsAdapter(Context context, List<String> data) {
+    RecipeInfoAdapter(Context context, List<String> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -33,8 +33,8 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String step = mData.get(position);
-        holder.myTextView.setText(step);
+        String ingredient = mData.get(position);
+        holder.myTextView.setText(ingredient);
     }
 
     // total number of rows

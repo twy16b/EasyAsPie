@@ -95,18 +95,6 @@ public class StandardStepFragment extends Fragment {
                                 if(getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0){
                                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                                 }
-                                /*
-                                // TODO: if (PREVIOUS instruction exists) {
-                                    // change fragment with next fragment
-                                    TimerStepFragment fragment = new TimerStepFragment();
-                                    Bundle arguments = new Bundle();
-                                    String newInstruction = "Sample instruction";  // TODO: replace this with database query for PREVIOUS instruction
-                                    arguments.putString( "newInstruction" , newInstruction);
-                                    fragment.setArguments(arguments);
-                                    final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                    ft.replace(R.id.fragment_container, fragment, null);
-                                    ft.commit();
-                                // }*/
                             }
                         } catch (Exception e) {
                             // nothing
@@ -121,8 +109,6 @@ public class StandardStepFragment extends Fragment {
                 return gesture.onTouchEvent(event);
             }
         });
-        // TODO: when this is completed, put a similar GestureDetector with setOnTouchListener in TimerStepFragment
-
         return v;
     }
 }

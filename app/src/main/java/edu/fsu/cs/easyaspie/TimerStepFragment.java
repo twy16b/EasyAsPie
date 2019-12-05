@@ -48,8 +48,6 @@ public class TimerStepFragment extends Fragment {
                 selectionArgs,
                 "_ID");
         myCursor.moveToPosition(stepNumber-1);
-        Log.d("TimerStepFragment", "onCreateView: stepNumber = " + stepNumber);
-        Log.d("TimerStepFragment", "onCreateView: recipeID = " + recipeID);
         stepDirections = myCursor.getString(1);
         stepText.setText(stepDirections);
         seconds = myCursor.getInt(2);
@@ -119,18 +117,6 @@ public class TimerStepFragment extends Fragment {
                                 if(getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0){
                                     getActivity().getSupportFragmentManager().popBackStackImmediate();
                                 }
-                                /*
-                                // TODO: if (PREVIOUS instruction exists) {
-                                    // change fragment with next fragment
-                                    TimerStepFragment fragment = new TimerStepFragment();
-                                    Bundle arguments = new Bundle();
-                                    String newInstruction = "Sample instruction";  // TODO: replace this with database query for PREVIOUS instruction
-                                    arguments.putString( "newInstruction" , newInstruction);
-                                    fragment.setArguments(arguments);
-                                    final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                    ft.replace(R.id.fragment_container, fragment, null);
-                                    ft.commit();
-                                // }*/
                             }
                         } catch (Exception e) {
                             // nothing
@@ -145,8 +131,6 @@ public class TimerStepFragment extends Fragment {
                 return gesture.onTouchEvent(event);
             }
         });
-        // TODO: when this is completed, put a similar GestureDetector with setOnTouchListener in TimerStepFragment
-
         return v;
     }
 }

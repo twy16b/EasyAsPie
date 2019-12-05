@@ -10,17 +10,13 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -76,17 +72,17 @@ public class RecipeActivity extends AppCompatActivity {
 
         layoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerView.setLayoutManager(layoutManager);
-        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        RecipeInfoAdapter mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeIngredients);
         ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(),
                 layoutManager.getOrientation()));
-        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+        ingredientsRecyclerView.setAdapter(mRecipeInfoAdapter);
 
         layoutManager = new LinearLayoutManager(this);
         stepsRecyclerView.setLayoutManager(layoutManager);
-        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeSteps);
         stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(),
                 layoutManager.getOrientation()));
-        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+        stepsRecyclerView.setAdapter(mRecipeInfoAdapter);
 
 
         Intent intent = getIntent();
@@ -212,18 +208,21 @@ public class RecipeActivity extends AppCompatActivity {
         EditRecipeName.setVisibility(EditRecipeName.GONE);
         fabRight.setImageResource(android.R.drawable.ic_menu_edit);
 
+        IngredientsToInsert.clear();
+        StepsToInsert.clear();
+
         //Display Recipe Information
         layoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerView.setLayoutManager(layoutManager);
-        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        RecipeInfoAdapter mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeIngredients);
         ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
-        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+        ingredientsRecyclerView.setAdapter(mRecipeInfoAdapter);
 
         layoutManager = new LinearLayoutManager(this);
         stepsRecyclerView.setLayoutManager(layoutManager);
-        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeSteps);
         stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
-        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+        stepsRecyclerView.setAdapter(mRecipeInfoAdapter);
 
         //Display Recipe Information
 
