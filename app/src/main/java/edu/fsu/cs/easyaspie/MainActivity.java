@@ -340,15 +340,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.button_recipes:
-                Intent myIntent = new Intent(MainActivity.this, RecipeListActivity.class);
-                MainActivity.this.startActivity(myIntent);
-                break;
-            case R.id.button_grocery:
-                break;
-            case R.id.button_times:
-                break;
-        }
+        Intent myIntent = new Intent(MainActivity.this, RecipeListActivity.class);
+        MainActivity.this.startActivity(myIntent);
     }
 }

@@ -61,7 +61,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ingredients_title"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight ="20dp"/>
 
             <Button
                 android:id="@+id/button_add_ingredient"
@@ -90,7 +92,9 @@
                 android:visibility="visible"
                 android:layout_below="@+id/steps_title"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight ="20dp"/>
 
             <Button
                 android:id="@+id/button_add_step"
