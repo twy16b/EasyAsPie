@@ -11,6 +11,8 @@ public class SilenceTimer extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent i = new Intent(context, TimerRingService.class);
+        i.setAction("Stop");
+        context.startService(i);
         context.stopService(i);
         Log.d("SilenceTimer", "onReceive: Stopped service");
     }

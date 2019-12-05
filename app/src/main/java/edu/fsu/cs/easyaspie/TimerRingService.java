@@ -25,37 +25,45 @@ public class TimerRingService extends Service implements MediaPlayer.OnPreparedL
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        String action = intent.getAction();
+        if ("Stop".equals(action)){
+            mediaPlayer.stop();
+        }
+        else {
+            mediaPlayer.start();
+            mediaPlayer.setLooping(true);
 
-        mediaPlayer.start();
-        mediaPlayer.setLooping(true);
+            Bundle bundle = intent.getExtras();
+            int stepNumber = bundle.getInt("stepNumber");
+            String recipeName = bundle.getString("recipeName");
+            int recipeID = bundle.getInt("recipeID");
+            long notificationId = bundle.getLong("notificationId");
 
-        Bundle bundle = intent.getExtras();
-        int stepNumber = bundle.getInt("stepNumber");
-        String recipeName = bundle.getString("recipeName");
-        int recipeID = bundle.getInt("recipeID");
-        long notificationId = bundle.getLong("notificationId");
+            Intent i = new Intent(this, SilenceTimer.class);
+            i.putExtra("stepNumber", stepNumber);
+            i.putExtra("recipeName", recipeName);
+            i.putExtra("recipeID", recipeID);
+            i.putExtra("notificationId", notificationId);
 
-        Intent i = new Intent(this, SilenceTimer.class);
-        i.putExtra("stepNumber", stepNumber);
-        i.putExtra("recipeName", recipeName);
-        i.putExtra("recipeID", recipeID);
-        i.putExtra("notificationId", notificationId);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) notificationId, i, 0);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) notificationId, i, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Easy as Pie")
-                .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-                .setContentTitle(recipeName)
-                .setContentText("Time's Up!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .addAction(R.drawable.ic_action_stat_reply, "Silence" , pendingIntent);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "Easy as Pie")
+                    .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                    .setContentTitle(recipeName)
+                    .setContentText("Time's Up!")
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setOnlyAlertOnce(true)
+                    .addAction(R.drawable.ic_action_stat_reply, "Silence" , pendingIntent);
 
 
 
-        startForeground((int) notificationId, builder.build());
+            startForeground((int) notificationId, builder.build());
+
+        }
 
         return START_STICKY;
+
     }
 
     @Override

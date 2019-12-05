@@ -269,7 +269,6 @@ public class RecipeActivity extends AppCompatActivity {
             else RecipeSteps.add("Step " + (i+1) + ": " + myCursor.getString(1));
             myCursor.moveToNext();
         }
-
         fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -391,15 +390,57 @@ public class RecipeActivity extends AppCompatActivity {
                                 else {
                                     // convert all time to seconds
                                     String stepDirections = editStep.getText().toString();
-                                    int totalSeconds = Integer.parseInt(hourSpinner.getSelectedItem().toString()) * 60 * 60
-                                            + Integer.parseInt(minuteSpinner.getSelectedItem().toString()) * 60
-                                            + Integer.parseInt(secondSpinner.getSelectedItem().toString());
+                                    int hours = Integer.parseInt(hourSpinner.getSelectedItem().toString());
+                                    int minutes = Integer.parseInt(minuteSpinner.getSelectedItem().toString());
+                                    int seconds = Integer.parseInt(secondSpinner.getSelectedItem().toString());
+
+                                    int totalSeconds = (hours * 60 * 60) + (minutes * 60) + seconds;
+
                                     ContentValues newStep = new ContentValues();
                                     newStep.put("directions", stepDirections);
                                     newStep.put("time", totalSeconds);
                                     newStep.put("recipeID", recipeID);
                                     StepsToInsert.add(newStep);
-                                    RecipeSteps.add(stepDirections + " for " + totalSeconds + " seconds");
+
+                                    boolean started = false;
+                                    String stepMessage = stepDirections + " for ";
+
+                                    if (hours > 0) {
+                                        started = true;
+                                        if (hours == 1) {
+                                            stepMessage += hours + " hour";
+                                        }
+                                        else {
+                                            stepMessage += hours + " hours";
+                                        }
+                                    }
+
+                                    if (minutes > 0) {
+                                        if (started) {
+                                            stepMessage += " and ";
+                                        }
+                                        started = true;
+                                        if (minutes == 1) {
+                                            stepMessage += minutes + " minute";
+                                        }
+                                        else {  
+                                            stepMessage += minutes + " minutes";
+                                        }
+                                    }
+
+                                    if (seconds > 0) {
+                                        if (started) {
+                                            stepMessage += " and ";
+                                        }
+                                        if (seconds == 1) {
+                                            stepMessage += seconds + " second";
+                                        }
+                                        else if (seconds > 1) {
+                                            stepMessage += seconds + " seconds";
+                                        }
+                                    }
+
+                                    RecipeSteps.add(stepMessage);
                                     alertDialog.dismiss();
                                 }
                             }
