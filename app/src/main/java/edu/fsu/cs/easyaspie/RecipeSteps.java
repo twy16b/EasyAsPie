@@ -1,5 +1,7 @@
 package edu.fsu.cs.easyaspie;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 
@@ -8,8 +10,17 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
 public class RecipeSteps extends FragmentActivity {
     private Fragment fragment;
+
+    RecipesProvider recipeProvider;
+    String recipeName;
+    int recipeID;
+    int stepNumber;
+    ArrayList<String> RecipeSteps;
+    int[] stepTimes;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +34,32 @@ public class RecipeSteps extends FragmentActivity {
                 finish();
             }
         });
+
+        recipeProvider = new RecipesProvider();
+        RecipeSteps = new ArrayList<>();
+
+        //Import steps into array
+        Intent intent = getIntent();
+        recipeName = intent.getStringExtra("recipeName");
+        recipeID = intent.getIntExtra("recipeID", 0);
+        stepNumber = intent.getIntExtra("stepNumber",1);
+
+        String selection = "recipeID = ?";
+        String [] selectionArgs3 = { "" + recipeID };
+        Cursor myCursor = recipeProvider.query(
+                RecipesProvider.StepsURI,
+                null,
+                selection,
+                selectionArgs3,
+                "_ID");
+        myCursor.moveToFirst();
+        stepTimes = new int[myCursor.getCount()];
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            RecipeSteps.add(myCursor.getString(1));
+            stepTimes[i] = myCursor.getInt(2);
+            myCursor.moveToNext();
+        }
+
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.fragment_container) != null) {
@@ -35,16 +72,16 @@ public class RecipeSteps extends FragmentActivity {
             }
 
             Bundle arguments = new Bundle();
-            String newStep = "First instruction";  // TODO: replace this with database query for next step
+            String newStep = RecipeSteps.get(stepNumber-1);
             arguments.putString( "newStep" , newStep);
-            /* TODO: if (step includes timer) {
+            if(stepTimes[stepNumber-1] != 0) {
             fragment = new TimerStepFragment();
-            String seconds = "60";                       // TODO: replace this with database query for seconds
-            arguments.putString( "seconds" , seconds);
+            int seconds = stepTimes[stepNumber-1];
+            arguments.putInt( "seconds" , seconds);
             }
-            else { */
+            else {
                 fragment = new StandardStepFragment();
-            //}
+            }
 
             fragment.setArguments(arguments);
 

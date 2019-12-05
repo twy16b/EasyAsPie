@@ -367,6 +367,7 @@ public class RecipeActivity extends AppCompatActivity {
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);
+                    myIntent.putExtra("recipeID", recipeID);
                     RecipeActivity.this.startActivity(myIntent);
                 }
                 break;
