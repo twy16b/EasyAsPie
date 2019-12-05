@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,12 +33,15 @@ public class RecipeActivity extends AppCompatActivity {
     int recipeID;
 
     EditText EditRecipeName;
+    TextView textRecipeName;
     String RecipeName;
     ArrayList<String> RecipeIngredients;
     ArrayList<String> RecipeSteps;
 
+    FloatingActionButton fab;
     Button addIngredient;
     Button addStep;
+    Button beginRecipe;
 
     RecipesProvider recipeProvider;
     LayoutInflater li;
@@ -54,47 +59,21 @@ public class RecipeActivity extends AppCompatActivity {
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
         EditRecipeName = findViewById(R.id.edit_name);
+        textRecipeName = findViewById(R.id.name_title);
+        textRecipeName.setPaintFlags(textRecipeName.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         addIngredient = findViewById(R.id.button_add_ingredient);
         addStep = findViewById(R.id.button_add_step);
+        beginRecipe = findViewById(R.id.button_begin_recipe);
         recipeProvider = new RecipesProvider();
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
 
         Intent intent = getIntent();
         recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
             //No recipe from intent, new recipe mode
-            addIngredient.setVisibility(addIngredient.VISIBLE);
-            addStep.setVisibility(addStep.VISIBLE);
-            fab.setImageResource(android.R.drawable.ic_menu_save);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (EditRecipeName.getText().toString().isEmpty()) {
-                        EditRecipeName.setError("This field can not be blank");
-                    } else {
-                        // TODO: check if RecipeName is already in the database
-                        // TODO: If it already is, show "Would you like to overwrite this activity_recipe?" Dialog
-
-                        ContentValues newRecipe = new ContentValues();
-                        newRecipe.put("name", EditRecipeName.getText().toString());
-                        recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
-                        finish();
-                    }
-
-                    Cursor myCursor = recipeProvider.query(
-                            RecipesProvider.RecipesURI,
-                            null,
-                            null,
-                            null,
-                            null);
-                    recipeID = myCursor.getCount();
-
-                }
-            });
+            startEditMode();
         }
-        else {
-            //Display recipe from intent
-
+        else{
             //Query Recipe Information
             String selection = "_ID = ?";
             String[] selectionArgs1 = { "" + recipeID };
@@ -139,27 +118,92 @@ public class RecipeActivity extends AppCompatActivity {
                 RecipeSteps.add(myCursor.getString(1));
                 myCursor.moveToNext();
             }
-
-            //Display Recipe Information
-            EditRecipeName.setText(RecipeName);
-
-            ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            RecipesAdapter mRecipesAdapter = new RecipesAdapter(this, RecipeIngredients);
-            ingredientsRecyclerView.setAdapter(mRecipesAdapter);
-
-            stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            mRecipesAdapter = new RecipesAdapter(this, RecipeSteps);
-            stepsRecyclerView.setAdapter(mRecipesAdapter);
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //TODO: Set to change the layout to edit mode
-                    addIngredient.setVisibility(view.VISIBLE);
-                    addStep.setVisibility(view.VISIBLE);
-                }
-            });
+            startDisplayMode();
         }
+    }
+
+    public void startEditMode() {
+        textRecipeName.setVisibility(textRecipeName.GONE);
+        beginRecipe.setVisibility(beginRecipe.GONE);
+        EditRecipeName.setVisibility(EditRecipeName.VISIBLE);
+        addIngredient.setVisibility(addIngredient.VISIBLE);
+        addStep.setVisibility(addStep.VISIBLE);
+
+        EditRecipeName.setText(RecipeName);
+
+        fab.setImageResource(android.R.drawable.ic_menu_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (EditRecipeName.getText().toString().isEmpty()) {
+                    EditRecipeName.setError("This field can not be blank");
+                }
+                else {
+                    // TODO: if (RecipeName is already in database) {
+                        alertDialogBuilder = new AlertDialog.Builder(
+                                RecipeActivity.this);
+                        alertDialogBuilder
+                                .setMessage("Would you like to overwrite this recipe?")
+                                .setCancelable(false)
+                                .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        // TODO: Update database with recipe
+                                        ContentValues newRecipe = new ContentValues();
+                                        newRecipe.put("name", EditRecipeName.getText().toString());
+                                        recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+                                        startDisplayMode();
+                                    }
+                                })
+                                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,int id) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    /* }
+                    else {
+                        ContentValues newRecipe = new ContentValues();
+                        newRecipe.put("name", EditRecipeName.getText().toString());
+                        recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+                        startDisplayMode();
+                    } */
+                }
+                Cursor myCursor = recipeProvider.query(
+                        RecipesProvider.RecipesURI,
+                        null,
+                        null,
+                        null,
+                        null);
+                recipeID = myCursor.getCount();
+            }
+        });
+    }
+
+    public void startDisplayMode() {
+        textRecipeName.setVisibility(textRecipeName.VISIBLE);
+        beginRecipe.setVisibility(beginRecipe.VISIBLE);
+        addIngredient.setVisibility(addIngredient.GONE);
+        addStep.setVisibility(addStep.GONE);
+        EditRecipeName.setVisibility(EditRecipeName.GONE);
+
+        //Display Recipe Information
+        textRecipeName.setText(RecipeName);
+
+        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startEditMode();
+            }
+        });
     }
 
     public void onClick(View v) {
@@ -202,6 +246,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     newIngredient.put("ingredient", quantityInput+" "+unitInput+" "+ingredientInput);
                                     newIngredient.put("recipeID", recipeID);
                                     recipeProvider.insert(RecipesProvider.IngredientsURI, newIngredient);
+                                    RecipeIngredients.add(quantityInput+" "+unitInput+" "+ingredientInput);
                                     alertDialog.dismiss();
                                 }
                                 if (quantityInput.isEmpty()) {
@@ -273,11 +318,17 @@ public class RecipeActivity extends AppCompatActivity {
                                 }
                                 else {
                                     // convert all time to seconds
+                                    String stepDirections = editStep.getText().toString();
                                     int totalSeconds = Integer.parseInt(hourSpinner.getSelectedItem().toString()) * 60 * 60
                                             + Integer.parseInt(minuteSpinner.getSelectedItem().toString()) * 60
                                             + Integer.parseInt(secondSpinner.getSelectedItem().toString());
                                     // TODO: add input to database and to IngredientsAdapter
-                                    stepsRecyclerView.setVisibility(View.VISIBLE); // display recycler view
+                                    ContentValues newStep = new ContentValues();
+                                    newStep.put("directions", stepDirections);
+                                    newStep.put("time", totalSeconds);
+                                    newStep.put("recipeID", recipeID);
+                                    recipeProvider.insert(RecipesProvider.StepsURI, newStep);
+                                    RecipeSteps.add(stepDirections);
                                     alertDialog.dismiss();
                                 }
                             }
@@ -288,12 +339,10 @@ public class RecipeActivity extends AppCompatActivity {
                 break;
             case R.id.button_begin_recipe:
                 //if (ingredients recyclerview is empty or steps recyclerview is empty) {
+                if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
                 Snackbar.make(v, "Need at least one step and one ingredient before " +
                         "beginning activity_recipe.", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                //}
-                if (EditRecipeName.getText().toString().isEmpty()) {
-                    EditRecipeName.setError("This field can not be blank");
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);
