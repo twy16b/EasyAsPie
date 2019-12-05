@@ -13,7 +13,9 @@
         android:padding="40dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/pie" />
+        android:src="@drawable/pie"
+        android:contentDescription="Clip art of a pie"/>
+    <!-- clip art taken from https://wikiclipart.com/dessert-clipart_22396/ -->
 
     <Button
         android:id="@+id/button_recipes"
