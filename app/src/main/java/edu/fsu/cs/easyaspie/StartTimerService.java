@@ -18,13 +18,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import java.util.Calendar;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 public class StartTimerService extends IntentService {
 
     int tick = 0;
@@ -33,17 +26,8 @@ public class StartTimerService extends IntentService {
         super("StartTimerService");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d("StartTimerService", "onHandleIntent: Started Service");
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             long time = bundle.getLong("time");
@@ -95,7 +79,7 @@ public class StartTimerService extends IntentService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step " + (stepNumber + 1) + ": Timer rings at " + hour + ":" + minutestr)
+                    .setContentText("Step " + stepNumber + ": Timer rings at " + hour + ":" + minutestr)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setOngoing(false)
                     .setOnlyAlertOnce(true);
@@ -122,22 +106,5 @@ public class StartTimerService extends IntentService {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

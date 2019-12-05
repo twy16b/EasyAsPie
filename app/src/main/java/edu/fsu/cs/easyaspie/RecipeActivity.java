@@ -264,8 +264,9 @@ public class RecipeActivity extends AppCompatActivity {
         myCursor.moveToFirst();
         RecipeSteps.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
-            if (myCursor.getInt(2) > 0) RecipeSteps.add("Step " + (i+1) + ": " + myCursor.getString(1) + " for " + myCursor.getInt(2) + " seconds");
-            else RecipeSteps.add("Step " + (i+1) + ": " + myCursor.getString(1));
+            int seconds = myCursor.getInt(1);
+            String stepMessage = "Step " + (i+1) + ": " + myCursor.getString(1);
+            RecipeSteps.add(stepMessage);
             myCursor.moveToNext();
         }
         fabRight.setOnClickListener(new View.OnClickListener() {
@@ -400,45 +401,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     newStep.put("time", totalSeconds);
                                     newStep.put("recipeID", recipeID);
                                     StepsToInsert.add(newStep);
-
-                                    boolean started = false;
-                                    String stepMessage = stepDirections + " for ";
-
-                                    if (hours > 0) {
-                                        started = true;
-                                        if (hours == 1) {
-                                            stepMessage += hours + " hour";
-                                        }
-                                        else {
-                                            stepMessage += hours + " hours";
-                                        }
-                                    }
-
-                                    if (minutes > 0) {
-                                        if (started) {
-                                            stepMessage += " and ";
-                                        }
-                                        started = true;
-                                        if (minutes == 1) {
-                                            stepMessage += minutes + " minute";
-                                        }
-                                        else {  
-                                            stepMessage += minutes + " minutes";
-                                        }
-                                    }
-
-                                    if (seconds > 0) {
-                                        if (started) {
-                                            stepMessage += " and ";
-                                        }
-                                        if (seconds == 1) {
-                                            stepMessage += seconds + " second";
-                                        }
-                                        else if (seconds > 1) {
-                                            stepMessage += seconds + " seconds";
-                                        }
-                                    }
-
+                                    String stepMessage = stepDirections;
                                     RecipeSteps.add(stepMessage);
                                     alertDialog.dismiss();
                                 }
@@ -449,7 +412,6 @@ public class RecipeActivity extends AppCompatActivity {
                 alertDialog.show();
                 break;
             case R.id.button_begin_recipe:
-                //if (ingredients recyclerview is empty or steps recyclerview is empty) {
                 if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
                     Snackbar.make(v, "Need at least one step and one ingredient before starting recipe.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
