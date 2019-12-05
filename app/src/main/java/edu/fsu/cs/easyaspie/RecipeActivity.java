@@ -1,9 +1,9 @@
 package edu.fsu.cs.easyaspie;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -36,7 +36,9 @@ public class RecipeActivity extends AppCompatActivity {
     EditText EditRecipeName;
     String RecipeName;
     ArrayList<String> RecipeIngredients;
+    ArrayList<ContentValues> IngredientsToInsert;
     ArrayList<String> RecipeSteps;
+    ArrayList<ContentValues> StepsToInsert;
 
     FloatingActionButton fabLeft;
     FloatingActionButton fabRight;
@@ -56,7 +58,6 @@ public class RecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Recipe");
         setContentView(R.layout.activity_recipe);
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
@@ -65,60 +66,37 @@ public class RecipeActivity extends AppCompatActivity {
         addStep = findViewById(R.id.button_add_step);
         beginRecipe = findViewById(R.id.button_begin_recipe);
         recipeProvider = new RecipesProvider();
-        fabLeft = findViewById(R.id.fab_left);
         fabRight = findViewById(R.id.fab_right);
+        fabLeft = findViewById(R.id.fab_left);
+
+        RecipeIngredients = new ArrayList<>();
+        IngredientsToInsert = new ArrayList<>();
+        RecipeSteps = new ArrayList<>();
+        StepsToInsert = new ArrayList<>();
+
+        layoutManager = new LinearLayoutManager(this);
+        ingredientsRecyclerView.setLayoutManager(layoutManager);
+        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(),
+                layoutManager.getOrientation()));
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        layoutManager = new LinearLayoutManager(this);
+        stepsRecyclerView.setLayoutManager(layoutManager);
+        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(),
+                layoutManager.getOrientation()));
+        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+
 
         Intent intent = getIntent();
         recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
             //No recipe from intent, new recipe mode
+            recipeID = RecipesProvider.RecipesCount+1;
             startEditMode();
         }
         else{
-            //Query Recipe Information
-            String selection = "_ID = ?";
-            String[] selectionArgs1 = { "" + recipeID };
-            Cursor myCursor = recipeProvider.query(
-                    RecipesProvider.RecipesURI,
-                    null,
-                    selection,
-                    selectionArgs1,
-                    "_ID");
-            myCursor.moveToFirst();
-            RecipeName = myCursor.getString(1);
-            RecipeIngredients = new ArrayList<>();
-            RecipeIngredients.add(myCursor.getString(1));
-
-            selection = "recipeID = ?";
-            String [] selectionArgs2 = { "" + recipeID };
-            myCursor = recipeProvider.query(
-                    RecipesProvider.IngredientsURI,
-                    null,
-                    selection,
-                    selectionArgs2,
-                    "_ID");
-            myCursor.moveToFirst();
-            RecipeIngredients = new ArrayList<>();
-            for(int i = 0; i < myCursor.getCount(); ++i) {
-                Log.d(TAG, "onCreate: Add ingredient " + myCursor.getString(1));
-                RecipeIngredients.add(myCursor.getString(1));
-                myCursor.moveToNext();
-            }
-
-            selection = "recipeID = ?";
-            String [] selectionArgs3 = { "" + recipeID };
-            myCursor = recipeProvider.query(
-                    RecipesProvider.StepsURI,
-                    null,
-                    selection,
-                    selectionArgs3,
-                    "_ID");
-            myCursor.moveToFirst();
-            RecipeSteps = new ArrayList<>();
-            for(int i = 0; i < myCursor.getCount(); ++i) {
-                RecipeSteps.add(myCursor.getString(1));
-                myCursor.moveToNext();
-            }
             startDisplayMode();
         }
         fabLeft.setOnClickListener(new View.OnClickListener() {
@@ -162,67 +140,113 @@ public class RecipeActivity extends AppCompatActivity {
                     EditRecipeName.setError("This field can not be blank");
                 }
                 else {
-                    // TODO: if (RecipeName is already in database) {
-                    alertDialogBuilder = new AlertDialog.Builder(
-                            RecipeActivity.this);
-                    alertDialogBuilder
-                            .setMessage("Would you like to overwrite this recipe?")
-                            .setCancelable(false)
-                            .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    // TODO: Update database with recipe
-                                    ContentValues newRecipe = new ContentValues();
-                                    newRecipe.put("name", EditRecipeName.getText().toString());
-                                    recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
-                                    startDisplayMode();
-                                }
-                            })
-                            .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-                    /* }
+                    if (recipeID <= RecipesProvider.RecipesCount) {
+                        alertDialogBuilder = new AlertDialog.Builder(
+                                RecipeActivity.this);
+                        alertDialogBuilder
+                                .setMessage("Would you like to update this recipe?")
+                                .setCancelable(false)
+                                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        String newRecipeName = EditRecipeName.getText().toString();
+                                        if (newRecipeName != RecipeName) {
+                                            ContentValues updateRecipe = new ContentValues();
+                                            updateRecipe.put("name", newRecipeName);
+                                            String selection = "name = ?";
+                                            String[] selectionArgs = {RecipeName};
+                                            recipeProvider.update(
+                                                    RecipesProvider.RecipesURI,
+                                                    updateRecipe,
+                                                    selection,
+                                                    selectionArgs);
+                                            RecipeName = newRecipeName;
+                                        }
+                                        for (int i = 0; i < IngredientsToInsert.size(); ++i) {
+                                            ContentValues insertIngredient = IngredientsToInsert.get(i);
+                                            recipeProvider.insert(RecipesProvider.IngredientsURI, insertIngredient);
+                                        }
+                                        for (int i = 0; i < StepsToInsert.size(); ++i) {
+                                            ContentValues insertStep = StepsToInsert.get(i);
+                                            recipeProvider.insert(RecipesProvider.StepsURI, insertStep);
+                                        }
+                                        startDisplayMode();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        AlertDialog alertDialog = alertDialogBuilder.create();
+                        alertDialog.show();
+                    }
                     else {
                         ContentValues newRecipe = new ContentValues();
                         newRecipe.put("name", EditRecipeName.getText().toString());
                         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+                        for (int i = 0; i < IngredientsToInsert.size(); ++i) {
+                            ContentValues insertIngredient = IngredientsToInsert.get(i);
+                            recipeProvider.insert(RecipesProvider.IngredientsURI, insertIngredient);
+                        }
+                        for (int i = 0; i < StepsToInsert.size(); ++i) {
+                            ContentValues insertStep = StepsToInsert.get(i);
+                            recipeProvider.insert(RecipesProvider.StepsURI, insertStep);
+                        }
                         startDisplayMode();
-                    } */
+                    }
                 }
-                Cursor myCursor = recipeProvider.query(
-                        RecipesProvider.RecipesURI,
-                        null,
-                        null,
-                        null,
-                        null);
-                recipeID = myCursor.getCount();
             }
         });
     }
 
     public void startDisplayMode() {
-        setTitle(RecipeName + " Recipe");
+        setTitle(EditRecipeName.getText().toString() + " Recipe");
+
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
+        fabRight.setImageResource(android.R.drawable.ic_menu_edit);
 
         //Display Recipe Information
+        String selection = "_ID = ?";
+        String[] selectionArgs1 = { "" + recipeID };
+        Cursor myCursor = recipeProvider.query(
+                RecipesProvider.RecipesURI,
+                null,
+                selection,
+                selectionArgs1,
+                "_ID");
+        myCursor.moveToFirst();
+        RecipeName = myCursor.getString(1);
 
-        layoutManager = new LinearLayoutManager(this);
-        ingredientsRecyclerView.setLayoutManager(layoutManager);
-        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
-        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
-        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+        selection = "recipeID = ?";
+        String [] selectionArgs2 = { "" + recipeID };
+        myCursor = recipeProvider.query(
+                RecipesProvider.IngredientsURI,
+                null,
+                selection,
+                selectionArgs2,
+                "_ID");
+        myCursor.moveToFirst();
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            RecipeIngredients.add(myCursor.getString(1));
+            myCursor.moveToNext();
+        }
 
-        layoutManager = new LinearLayoutManager(this);
-        stepsRecyclerView.setLayoutManager(layoutManager);
-        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
-        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
-        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+        selection = "recipeID = ?";
+        String [] selectionArgs3 = { "" + recipeID };
+        myCursor = recipeProvider.query(
+                RecipesProvider.StepsURI,
+                null,
+                selection,
+                selectionArgs3,
+                "_ID");
+        myCursor.moveToFirst();
+        for(int i = 0; i < myCursor.getCount(); ++i) {
+            RecipeSteps.add(myCursor.getString(1) + " for " + myCursor.getString(2) + " seconds");
+            myCursor.moveToNext();
+        }
 
         fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,12 +291,12 @@ public class RecipeActivity extends AppCompatActivity {
                                 String unitInput = unitSpinner.getSelectedItem().toString();
                                 String ingredientInput = editIngredient.getText().toString();
                                 if (!quantityInput.isEmpty() && !ingredientInput.isEmpty()) {
-                                    // TODO: add input to database and to StepsAdapter
-                                    ContentValues newIngredient = new ContentValues();
-                                    newIngredient.put("ingredient", quantityInput+" "+unitInput+" "+ingredientInput);
-                                    newIngredient.put("recipeID", recipeID);
-                                    recipeProvider.insert(RecipesProvider.IngredientsURI, newIngredient);
-                                    RecipeIngredients.add(quantityInput+" "+unitInput+" "+ingredientInput);
+                                    String newIngredient = quantityInput+" "+unitInput+" "+ingredientInput;
+                                    ContentValues newIngredientContent = new ContentValues();
+                                    newIngredientContent.put("ingredient", newIngredient);
+                                    newIngredientContent.put("recipeID", recipeID);
+                                    IngredientsToInsert.add(newIngredientContent);
+                                    RecipeIngredients.add(newIngredient);
                                     alertDialog.dismiss();
                                 }
                                 if (quantityInput.isEmpty()) {
@@ -352,8 +376,8 @@ public class RecipeActivity extends AppCompatActivity {
                                     newStep.put("directions", stepDirections);
                                     newStep.put("time", totalSeconds);
                                     newStep.put("recipeID", recipeID);
-                                    recipeProvider.insert(RecipesProvider.StepsURI, newStep);
-                                    RecipeSteps.add(stepDirections);
+                                    StepsToInsert.add(newStep);
+                                    RecipeSteps.add(stepDirections + " for " + totalSeconds + " seconds");
                                     alertDialog.dismiss();
                                 }
                             }
@@ -365,9 +389,9 @@ public class RecipeActivity extends AppCompatActivity {
             case R.id.button_begin_recipe:
                 //if (ingredients recyclerview is empty or steps recyclerview is empty) {
                 if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
-                Snackbar.make(v, "Need at least one step and one ingredient before " +
-                        "beginning activity_recipe.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                    Snackbar.make(v, "Need at least one step and one ingredient before " +
+                            "beginning activity_recipe.", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);

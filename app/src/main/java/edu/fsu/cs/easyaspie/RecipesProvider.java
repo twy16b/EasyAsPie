@@ -14,6 +14,7 @@ public class RecipesProvider extends ContentProvider {
     public static final int DBVERSION = 1;
     public final static String DBNAME = "RecipeProvider";
     public final static String TABLENAME_1 = "Recipes";
+    public static int RecipesCount = 0;
     public final static String TABLENAME_2 = "Ingredients";
     public final static String TABLENAME_3 = "Steps";
 
@@ -73,15 +74,22 @@ public class RecipesProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         long id;
         String uriString = uri.toString();
-        if(uriString.contains("recipes")) id = mOpenHelper
+        if (uriString.contains("recipes")) {
+            id = mOpenHelper
                 .getWritableDatabase()
                 .insert(TABLENAME_1, null, values);
-        else if(uriString.contains("ingredients")) id = mOpenHelper
-                .getWritableDatabase()
-                .insert(TABLENAME_2, null, values);
-        else if(uriString.contains("steps")) id = mOpenHelper
-                .getWritableDatabase()
-                .insert(TABLENAME_3, null, values);
+            ++RecipesCount;
+        }
+        else if(uriString.contains("ingredients")) {
+            id = mOpenHelper
+                    .getWritableDatabase()
+                    .insert(TABLENAME_2, null, values);
+        }
+        else if(uriString.contains("steps")) {
+            id = mOpenHelper
+                    .getWritableDatabase()
+                    .insert(TABLENAME_3, null, values);
+        }
         else id = -1;
         uri = Uri.withAppendedPath(uri, "" + id);
         return uri;
@@ -109,10 +117,12 @@ public class RecipesProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         String uriString = uri.toString();
-        if(uriString.contains("recipes"))
+        if (uriString.contains("recipes")) {
+            --RecipesCount;
             return mOpenHelper
                     .getWritableDatabase()
                     .delete(TABLENAME_1, selection, selectionArgs);
+        }
         else if(uriString.contains("ingredients"))
             return mOpenHelper
                     .getWritableDatabase()
