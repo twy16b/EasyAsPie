@@ -104,7 +104,13 @@ public class RecipeActivity extends AppCompatActivity {
                         .setCancelable(false)
                         .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
-                                // TODO: delete recipe from database
+                                String selection = "_ID = ?";
+                                String[] selectionArgs = {""+recipeID};
+                                recipeProvider.delete(
+                                        RecipesProvider.RecipesURI,
+                                        selection,
+                                        selectionArgs);
+                                finish();
                             }
                         })
                         .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {

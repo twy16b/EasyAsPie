@@ -71,7 +71,14 @@ public class RecipeListActivity extends AppCompatActivity implements RecipesAdap
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(RecipeListActivity.this, RecipeActivity.class);
-        intent.putExtra("recipeID", position+1);
+        Cursor myCursor = recipeProvider.query(
+                RecipesProvider.RecipesURI,
+                null,
+                null,
+                null,
+                "_ID");
+        myCursor.moveToPosition(position);
+        intent.putExtra("recipeID", myCursor.getInt(0));
         startActivity(intent);
     }
 }
