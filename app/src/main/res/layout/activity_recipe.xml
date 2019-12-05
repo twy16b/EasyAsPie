@@ -17,101 +17,109 @@
 
     <ScrollView
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        >
+        android:layout_width="match_parent" >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".RecipeActivity">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
-        <EditText
-            android:id="@+id/edit_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Recipe Name"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            app:layout_constraintBottom_toTopOf="@+id/ingredients_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <RelativeLayout
+                android:id="@+id/title_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+                <EditText
+                    android:id="@+id/edit_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Recipe Name:"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ingredients_title"
-            android:text="Ingredients"
-            app:layout_constraintBottom_toTopOf="@+id/recycler_view_ingredients"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+                <TextView
+                    android:id="@+id/name_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:textColor="#000000"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_ingredients"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/button_add_ingredient"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_name" />
+            <TextView
+                android:id="@+id/ingredients_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title_layout"
+                android:text="Ingredients:"
+                android:textSize="18dp"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"/>
 
-        <Button
-            android:id="@+id/button_add_ingredient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:onClick="onClick"
-            android:text="Add Ingredient"
-            app:layout_constraintBottom_toTopOf="@+id/recycler_view_steps"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_view_ingredients" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_ingredients"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ingredients_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_steps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/button_add_step"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_add_ingredient" />
+            <Button
+                android:id="@+id/button_add_ingredient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClick"
+                android:text="Add Ingredient"
+                android:layout_below="@+id/recycler_view_ingredients"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp" />
 
-        <Button
-            android:id="@+id/button_add_step"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:onClick="onClick"
-            android:text="Add step"
-            app:layout_constraintBottom_toTopOf="@+id/button_begin_recipe"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_view_steps" />
+            <TextView
+                android:id="@+id/steps_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/button_add_ingredient"
+                android:text="Steps:"
+                android:textSize="18dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp" />
 
-        <Button
-            android:id="@+id/button_begin_recipe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:text="Begin Recipe"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_add_step" />
-        />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_below="@+id/steps_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/button_add_step"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClick"
+                android:text="Add step"
+                android:layout_below="@+id/recycler_view_steps"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/button_begin_recipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClick"
+                android:text="Begin Recipe"
+                android:layout_below="@+id/button_add_step"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"/>
+            />
+
+        </RelativeLayout>
 
     </ScrollView>
 
