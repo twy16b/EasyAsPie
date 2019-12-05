@@ -1,9 +1,9 @@
 package edu.fsu.cs.easyaspie;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -58,7 +58,6 @@ public class RecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Recipe");
         setContentView(R.layout.activity_recipe);
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
@@ -67,20 +66,26 @@ public class RecipeActivity extends AppCompatActivity {
         addStep = findViewById(R.id.button_add_step);
         beginRecipe = findViewById(R.id.button_begin_recipe);
         recipeProvider = new RecipesProvider();
-        fabLeft = findViewById(R.id.fab_left);
         fabRight = findViewById(R.id.fab_right);
+        fabLeft = findViewById(R.id.fab_left);
 
         RecipeIngredients = new ArrayList<>();
         IngredientsToInsert = new ArrayList<>();
         RecipeSteps = new ArrayList<>();
         StepsToInsert = new ArrayList<>();
 
-        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        ingredientsRecyclerView.setLayoutManager(layoutManager);
         IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(),
+                layoutManager.getOrientation()));
         ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
 
-        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        stepsRecyclerView.setLayoutManager(layoutManager);
         mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(),
+                layoutManager.getOrientation()));
         stepsRecyclerView.setAdapter(mIngredientsAdapter);
 
 
@@ -201,12 +206,15 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void startDisplayMode() {
+        setTitle(EditRecipeName.getText().toString() + " Recipe");
+
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
         fabRight.setImageResource(android.R.drawable.ic_menu_edit);
-      
+
+        //Display Recipe Information
         layoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerView.setLayoutManager(layoutManager);
         IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
@@ -404,9 +412,9 @@ public class RecipeActivity extends AppCompatActivity {
             case R.id.button_begin_recipe:
                 //if (ingredients recyclerview is empty or steps recyclerview is empty) {
                 if (RecipeIngredients.isEmpty() || RecipeSteps.isEmpty()) {
-                Snackbar.make(v, "Need at least one step and one ingredient before " +
-                        "beginning activity_recipe.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                    Snackbar.make(v, "Need at least one step and one ingredient before " +
+                            "beginning activity_recipe.", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);
