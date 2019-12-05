@@ -1,6 +1,7 @@
 package edu.fsu.cs.easyaspie;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,14 +34,14 @@ public class RecipeActivity extends AppCompatActivity {
     int recipeID;
 
     EditText EditRecipeName;
-    TextView textRecipeName;
     String RecipeName;
     ArrayList<String> RecipeIngredients;
     ArrayList<ContentValues> IngredientsToInsert;
     ArrayList<String> RecipeSteps;
     ArrayList<ContentValues> StepsToInsert;
 
-    FloatingActionButton fab;
+    FloatingActionButton fabLeft;
+    FloatingActionButton fabRight;
     Button addIngredient;
     Button addStep;
     Button beginRecipe;
@@ -52,6 +53,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     RecyclerView ingredientsRecyclerView;
     RecyclerView stepsRecyclerView;
+    LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +63,12 @@ public class RecipeActivity extends AppCompatActivity {
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
         EditRecipeName = findViewById(R.id.edit_name);
-        textRecipeName = findViewById(R.id.name_title);
-        textRecipeName.setPaintFlags(textRecipeName.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         addIngredient = findViewById(R.id.button_add_ingredient);
         addStep = findViewById(R.id.button_add_step);
         beginRecipe = findViewById(R.id.button_begin_recipe);
         recipeProvider = new RecipesProvider();
-        fab = findViewById(R.id.fab);
+        fabLeft = findViewById(R.id.fab_left);
+        fabRight = findViewById(R.id.fab_right);
 
         RecipeIngredients = new ArrayList<>();
         IngredientsToInsert = new ArrayList<>();
@@ -93,10 +94,32 @@ public class RecipeActivity extends AppCompatActivity {
         else{
             startDisplayMode();
         }
+        fabLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialogBuilder = new AlertDialog.Builder(
+                        RecipeActivity.this);
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to delete this recipe?")
+                        .setCancelable(false)
+                        .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // TODO: delete recipe from database
+                            }
+                        })
+                        .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
     }
 
     public void startEditMode() {
-        textRecipeName.setVisibility(textRecipeName.GONE);
+        setTitle("Edit Recipe");
         beginRecipe.setVisibility(beginRecipe.GONE);
         EditRecipeName.setVisibility(EditRecipeName.VISIBLE);
         addIngredient.setVisibility(addIngredient.VISIBLE);
@@ -104,8 +127,8 @@ public class RecipeActivity extends AppCompatActivity {
 
         EditRecipeName.setText(RecipeName);
 
-        fab.setImageResource(android.R.drawable.ic_menu_save);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabRight.setImageResource(android.R.drawable.ic_menu_save);
+        fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (EditRecipeName.getText().toString().isEmpty()) {
@@ -172,14 +195,27 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void startDisplayMode() {
-        textRecipeName.setVisibility(textRecipeName.VISIBLE);
+        setTitle(RecipeName + " Recipe");
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
         fab.setImageResource(android.R.drawable.ic_menu_edit);
+      
+        layoutManager = new LinearLayoutManager(this);
+        ingredientsRecyclerView.setLayoutManager(layoutManager);
+        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        layoutManager = new LinearLayoutManager(this);
+        stepsRecyclerView.setLayoutManager(layoutManager);
+        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
+        stepsRecyclerView.setAdapter(mIngredientsAdapter);
 
         //Display Recipe Information
+
         String selection = "_ID = ?";
         String[] selectionArgs1 = { "" + recipeID };
         Cursor myCursor = recipeProvider.query(
@@ -220,7 +256,7 @@ public class RecipeActivity extends AppCompatActivity {
             myCursor.moveToNext();
         }
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startEditMode();

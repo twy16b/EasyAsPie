@@ -8,6 +8,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,9 +59,12 @@ public class RecipeListActivity extends AppCompatActivity implements RecipesAdap
 
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recipes_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         mRecipesAdapter = new RecipesAdapter(this, foodNames);
         mRecipesAdapter.setClickListener(this);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation()));
         recyclerView.setAdapter(mRecipesAdapter);
     }
 
