@@ -19,7 +19,7 @@ public class TimerReciever extends BroadcastReceiver {
         String recipeName = bundle.getString("recipeName");
         long notificationId = bundle.getLong("notificationId");
 
-        Toast.makeText(context, recipeName, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(context, recipeName, Toast.LENGTH_SHORT).show();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "Easy as Pie")
                 .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
