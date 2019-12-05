@@ -14,6 +14,8 @@ public class SilenceTimer extends BroadcastReceiver {
         i.setAction("Stop");
         context.startService(i);
         context.stopService(i);
-        Log.d("SilenceTimer", "onReceive: Stopped service");
+        Intent stepIntent = new Intent(context, RecipeSteps.class);
+        stepIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(stepIntent);
     }
 }

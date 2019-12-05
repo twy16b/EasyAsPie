@@ -106,8 +106,12 @@ public class TimerStepFragment extends Fragment {
 
                                     fragment.setArguments(arguments);
                                     final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                                    ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
-                                            R.anim.slide_in_right, R.anim.slide_out_left);
+                                    ft.setCustomAnimations(
+                                            R.anim.slide_in_right,
+                                            R.anim.slide_out_left,
+                                            android.R.anim.slide_in_left,
+                                            android.R.anim.slide_out_right
+                                    );
                                     ft.replace(R.id.fragment_container, fragment, null).addToBackStack(null).commit();
                                 }
                             }
