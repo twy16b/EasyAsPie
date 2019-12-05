@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         recipeProvider = new RecipesProvider();
 
-        //Empty any existing data
+        //Empty any existing data for testing purposes
         ClearAllData();
 
         //Load Example Data
@@ -74,14 +75,14 @@ public class MainActivity extends AppCompatActivity {
         //Steps for Spaghetti
         ContentValues newStep = new ContentValues();
         newStep.put("directions", "Heat a large skillet over medium-high heat. Cook and stir beef in the hot skillet until browned and crumbly");
-        newStep.put("time", "360");
+        newStep.put("time", "5");
         newStep.put("recipeID", "1");
         recipeProvider.insert(RecipesProvider.StepsURI, newStep);
-        newStep.put("directions", "Mix water, tomato juice, tomato paste, minced onion, chili powder, sugar, oregano, garlic salt, and salt into ground beef; cover skillet and bring to a boil. Reduce heat to medium-low and simmer beef mixture, stirring occasionally, until flavors have blended.");
-        newStep.put("time", "1800");
+        newStep.put("directions", "Mix water, tomato juice, tomato paste, minced onion, chili powder, sugar, oregano, garlic salt, and salt into ground beef; cover skillet and bring to a boil. Reduce heat to medium-low and simmer beef mixture, stirring occasionally, until flavors have blended");
+        newStep.put("time", "5");
         newStep.put("recipeID", "1");
         recipeProvider.insert(RecipesProvider.StepsURI, newStep);
-        newStep.put("directions", "Place spaghetti into beef mixture and stir to separate strands; cover skillet and simmer, stirring frequently, until spaghetti is tender.");
+        newStep.put("directions", "Place spaghetti into beef mixture and stir to separate strands; cover skillet and simmer, stirring frequently, until spaghetti is tender");
         newStep.put("time", "1800");
         newStep.put("recipeID", "1");
         recipeProvider.insert(RecipesProvider.StepsURI, newStep);
