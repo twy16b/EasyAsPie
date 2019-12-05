@@ -20,12 +20,13 @@ public class MainActivity extends AppCompatActivity {
         recipeProvider = new RecipesProvider();
 
         //Empty any existing data
-        recipeProvider.delete(RecipesProvider.RecipesURI, null, null);
-        recipeProvider.delete(RecipesProvider.IngredientsURI, null, null);
-        recipeProvider.delete(RecipesProvider.StepsURI, null, null);
-        recipeProvider.RecipesCount = 0;
+        ClearAllData();
 
         //Load Example Data
+        InsertPreMadeRecipes();
+    }
+
+    public void InsertPreMadeRecipes() {
         ContentValues newRecipe = new ContentValues();
         newRecipe.put("name", "Spaghetti");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
@@ -40,13 +41,24 @@ public class MainActivity extends AppCompatActivity {
         recipeProvider.insert(RecipesProvider.StepsURI, newStep);
         newRecipe.put("name", "Chicken");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+        newStep = new ContentValues();
+        newStep.put("directions", "Cook chicken");
+        newStep.put("time", "600");
+        newStep.put("recipeID", "2");
+        recipeProvider.insert(RecipesProvider.StepsURI, newStep);
         newRecipe.put("name", "Salad");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Pie");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Cake");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+    }
 
+    public void ClearAllData() {
+        recipeProvider.delete(RecipesProvider.RecipesURI, null, null);
+        recipeProvider.delete(RecipesProvider.IngredientsURI, null, null);
+        recipeProvider.delete(RecipesProvider.StepsURI, null, null);
+        recipeProvider.RecipesCount = 0;
     }
 
     public void onClick(View v) {
