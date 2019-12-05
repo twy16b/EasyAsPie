@@ -64,12 +64,20 @@ public class StartTimerService extends IntentService {
             //creating a pending intent using the intent
             PendingIntent pi = PendingIntent.getBroadcast(this, tick, i, 0);
 
-            am.set(AlarmManager.RTC_WAKEUP, alarmtime, pi);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                am.setExact(AlarmManager.RTC_WAKEUP, alarmtime, pi);
+            }
+            else {
+                am.set(AlarmManager.RTC_WAKEUP, alarmtime, pi);
+            }
+
+            Calendar datetime = Calendar.getInstance();
+            datetime.setTimeInMillis(alarmtime);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step " + stepNumber + ": Timer started for " + time/1000 + " seconds.")
+                    .setContentText("Step " + stepNumber + ": Timer rings at " + datetime.get(Calendar.HOUR) + ":" + datetime.get(Calendar.MINUTE))
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             createNotificationChannel();
@@ -77,8 +85,6 @@ public class StartTimerService extends IntentService {
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getBaseContext());
 
             notificationManager.notify((int) currtime, builder.build());
-
-
         }
     }
 
