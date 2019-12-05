@@ -1,6 +1,7 @@
 package edu.fsu.cs.easyaspie;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,12 +34,12 @@ public class RecipeActivity extends AppCompatActivity {
     int recipeID;
 
     EditText EditRecipeName;
-    TextView textRecipeName;
     String RecipeName;
     ArrayList<String> RecipeIngredients;
     ArrayList<String> RecipeSteps;
 
-    FloatingActionButton fab;
+    FloatingActionButton fabLeft;
+    FloatingActionButton fabRight;
     Button addIngredient;
     Button addStep;
     Button beginRecipe;
@@ -50,6 +51,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     RecyclerView ingredientsRecyclerView;
     RecyclerView stepsRecyclerView;
+    LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +61,12 @@ public class RecipeActivity extends AppCompatActivity {
         ingredientsRecyclerView =  findViewById(R.id.recycler_view_ingredients);
         stepsRecyclerView =  findViewById(R.id.recycler_view_steps);
         EditRecipeName = findViewById(R.id.edit_name);
-        textRecipeName = findViewById(R.id.name_title);
-        textRecipeName.setPaintFlags(textRecipeName.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
         addIngredient = findViewById(R.id.button_add_ingredient);
         addStep = findViewById(R.id.button_add_step);
         beginRecipe = findViewById(R.id.button_begin_recipe);
         recipeProvider = new RecipesProvider();
-        fab = findViewById(R.id.fab);
+        fabLeft = findViewById(R.id.fab_left);
+        fabRight = findViewById(R.id.fab_right);
 
         Intent intent = getIntent();
         recipeID = intent.getIntExtra("recipeID", 0);
@@ -120,10 +121,32 @@ public class RecipeActivity extends AppCompatActivity {
             }
             startDisplayMode();
         }
+        fabLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialogBuilder = new AlertDialog.Builder(
+                        RecipeActivity.this);
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to delete this recipe?")
+                        .setCancelable(false)
+                        .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // TODO: delete recipe from database
+                            }
+                        })
+                        .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
     }
 
     public void startEditMode() {
-        textRecipeName.setVisibility(textRecipeName.GONE);
+        setTitle("Edit Recipe");
         beginRecipe.setVisibility(beginRecipe.GONE);
         EditRecipeName.setVisibility(EditRecipeName.VISIBLE);
         addIngredient.setVisibility(addIngredient.VISIBLE);
@@ -131,8 +154,8 @@ public class RecipeActivity extends AppCompatActivity {
 
         EditRecipeName.setText(RecipeName);
 
-        fab.setImageResource(android.R.drawable.ic_menu_save);
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabRight.setImageResource(android.R.drawable.ic_menu_save);
+        fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (EditRecipeName.getText().toString().isEmpty()) {
@@ -140,27 +163,27 @@ public class RecipeActivity extends AppCompatActivity {
                 }
                 else {
                     // TODO: if (RecipeName is already in database) {
-                        alertDialogBuilder = new AlertDialog.Builder(
-                                RecipeActivity.this);
-                        alertDialogBuilder
-                                .setMessage("Would you like to overwrite this recipe?")
-                                .setCancelable(false)
-                                .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
-                                        // TODO: Update database with recipe
-                                        ContentValues newRecipe = new ContentValues();
-                                        newRecipe.put("name", EditRecipeName.getText().toString());
-                                        recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
-                                        startDisplayMode();
-                                    }
-                                })
-                                .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
+                    alertDialogBuilder = new AlertDialog.Builder(
+                            RecipeActivity.this);
+                    alertDialogBuilder
+                            .setMessage("Would you like to overwrite this recipe?")
+                            .setCancelable(false)
+                            .setPositiveButton("Accept",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,int id) {
+                                    // TODO: Update database with recipe
+                                    ContentValues newRecipe = new ContentValues();
+                                    newRecipe.put("name", EditRecipeName.getText().toString());
+                                    recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
+                                    startDisplayMode();
+                                }
+                            })
+                            .setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,int id) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                     /* }
                     else {
                         ContentValues newRecipe = new ContentValues();
@@ -181,24 +204,27 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void startDisplayMode() {
-        textRecipeName.setVisibility(textRecipeName.VISIBLE);
+        setTitle(RecipeName + " Recipe");
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
 
         //Display Recipe Information
-        textRecipeName.setText(RecipeName);
 
-        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        ingredientsRecyclerView.setLayoutManager(layoutManager);
         IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
         ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
 
-        stepsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        layoutManager = new LinearLayoutManager(this);
+        stepsRecyclerView.setLayoutManager(layoutManager);
         mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
         stepsRecyclerView.setAdapter(mIngredientsAdapter);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fabRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startEditMode();
@@ -322,7 +348,6 @@ public class RecipeActivity extends AppCompatActivity {
                                     int totalSeconds = Integer.parseInt(hourSpinner.getSelectedItem().toString()) * 60 * 60
                                             + Integer.parseInt(minuteSpinner.getSelectedItem().toString()) * 60
                                             + Integer.parseInt(secondSpinner.getSelectedItem().toString());
-                                    // TODO: add input to database and to IngredientsAdapter
                                     ContentValues newStep = new ContentValues();
                                     newStep.put("directions", stepDirections);
                                     newStep.put("time", totalSeconds);
