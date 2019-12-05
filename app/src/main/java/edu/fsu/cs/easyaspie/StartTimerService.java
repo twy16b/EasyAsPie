@@ -7,8 +7,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
@@ -41,11 +43,12 @@ public class StartTimerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d("StartTimerService", "onHandleIntent: Started Service");
         if (intent != null) {
-            tick +=1;
             Bundle bundle = intent.getExtras();
             long time = bundle.getLong("time");
             String recipeName = bundle.getString("recipeName");
+            int recipeID = bundle.getInt("recipeID");
             int stepNumber = bundle.getInt("stepNumber");
 
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -53,16 +56,17 @@ public class StartTimerService extends IntentService {
             Calendar calendar = Calendar.getInstance();
 
             long currtime = calendar.getTimeInMillis();
-            long alarmtime = currtime + time;
+            long alarmtime = currtime + time*1000;
 
             Intent i = new Intent(this, TimerReciever.class);
 
             i.putExtra("recipeName", recipeName);
+            i.putExtra("recipeID", recipeID);
             i.putExtra("stepNumber", stepNumber);
             i.putExtra("notificationId", currtime);
 
             //creating a pending intent using the intent
-            PendingIntent pi = PendingIntent.getBroadcast(this, tick, i, 0);
+            PendingIntent pi = PendingIntent.getBroadcast(this, (int) currtime, i, 0);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 am.setExact(AlarmManager.RTC_WAKEUP, alarmtime, pi);
@@ -74,11 +78,27 @@ public class StartTimerService extends IntentService {
             Calendar datetime = Calendar.getInstance();
             datetime.setTimeInMillis(alarmtime);
 
+            int hour = datetime.get(Calendar.HOUR);
+            if (hour == 0) {
+                hour = 12;
+            }
+
+            String minutestr;
+            int minute = datetime.get(Calendar.MINUTE);
+            if (minute < (int) 10) {
+                minutestr = "0" + minute;
+            }
+            else {
+                minutestr = "" + minute;
+            }
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step " + stepNumber + ": Timer rings at " + datetime.get(Calendar.HOUR) + ":" + datetime.get(Calendar.MINUTE))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                    .setContentText("Step " + stepNumber+1 + ": Timer rings at " + hour + ":" + minutestr)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setOngoing(false)
+                    .setOnlyAlertOnce(true);
 
             createNotificationChannel();
 
@@ -87,7 +107,6 @@ public class StartTimerService extends IntentService {
             notificationManager.notify((int) currtime, builder.build());
         }
     }
-
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because

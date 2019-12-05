@@ -18,9 +18,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recipeProvider = new RecipesProvider();
+
+        //Empty any existing data
         recipeProvider.delete(RecipesProvider.RecipesURI, null, null);
         recipeProvider.delete(RecipesProvider.IngredientsURI, null, null);
         recipeProvider.delete(RecipesProvider.StepsURI, null, null);
+        recipeProvider.RecipesCount = 0;
+
+        //Load Example Data
         ContentValues newRecipe = new ContentValues();
         newRecipe.put("name", "Spaghetti");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
@@ -41,18 +46,6 @@ public class MainActivity extends AppCompatActivity {
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
         newRecipe.put("name", "Cake");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
-
-        Intent intent = new Intent(getBaseContext(), StartTimerService.class);
-        intent.putExtra("recipeName", "Spaghetti");
-        intent.putExtra("time", (long) 10000);
-        intent.putExtra("stepNumber", 5);
-        startService(intent);
-
-        Intent intent2 = new Intent(getBaseContext(), StartTimerService.class);
-        intent2.putExtra("recipeName", "Chicken");
-        intent2.putExtra("time", (long) 30000);
-        intent2.putExtra("stepNumber", 5);
-        startService(intent2);
 
     }
 

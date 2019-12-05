@@ -70,9 +70,6 @@ public class RecipeListActivity extends AppCompatActivity implements RecipesAdap
 
     @Override
     public void onItemClick(View view, int position) {
-        // TODO: open RecipeActivity for the correct recipe
-        Snackbar.make(view, "You clicked " + mRecipesAdapter.getItem(position) + " on row number " + position, Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
         Intent intent = new Intent(RecipeListActivity.this, RecipeActivity.class);
         intent.putExtra("recipeID", position+1);
         startActivity(intent);
