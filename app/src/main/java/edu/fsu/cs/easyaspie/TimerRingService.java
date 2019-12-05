@@ -30,14 +30,15 @@ public class TimerRingService extends Service implements MediaPlayer.OnPreparedL
         mediaPlayer.setLooping(true);
 
         Bundle bundle = intent.getExtras();
-
         int stepNumber = bundle.getInt("stepNumber");
         String recipeName = bundle.getString("recipeName");
+        int recipeID = bundle.getInt("recipeID");
         long notificationId = bundle.getLong("notificationId");
 
         Intent i = new Intent(this, SilenceTimer.class);
-        i.putExtra("stepNumber" , stepNumber);
+        i.putExtra("stepNumber", stepNumber);
         i.putExtra("recipeName", recipeName);
+        i.putExtra("recipeID", recipeID);
         i.putExtra("notificationId", notificationId);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) notificationId, i, 0);

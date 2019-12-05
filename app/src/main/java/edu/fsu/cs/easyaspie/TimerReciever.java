@@ -22,6 +22,7 @@ public class TimerReciever extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         int stepNumber = bundle.getInt("stepNumber");
         String recipeName = bundle.getString("recipeName");
+        int recipeID = bundle.getInt("recipeID");
         long notificationId = bundle.getLong("notificationId");
 
         // Toast.makeText(context, recipeName, Toast.LENGTH_SHORT).show();
@@ -29,6 +30,7 @@ public class TimerReciever extends BroadcastReceiver {
         Intent i = new Intent(context, TimerRingService.class);
         i.putExtra("stepNumber", stepNumber);
         i.putExtra("recipeName", recipeName);
+        i.putExtra("recipeID", recipeID);
         i.putExtra("notificationId", notificationId);
         context.startService(i);
 

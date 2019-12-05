@@ -209,6 +209,20 @@ public class RecipeActivity extends AppCompatActivity {
         fabRight.setImageResource(android.R.drawable.ic_menu_edit);
 
         //Display Recipe Information
+        layoutManager = new LinearLayoutManager(this);
+        ingredientsRecyclerView.setLayoutManager(layoutManager);
+        IngredientsAdapter mIngredientsAdapter = new IngredientsAdapter(this, RecipeIngredients);
+        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
+        ingredientsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        layoutManager = new LinearLayoutManager(this);
+        stepsRecyclerView.setLayoutManager(layoutManager);
+        mIngredientsAdapter = new IngredientsAdapter(this, RecipeSteps);
+        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
+        stepsRecyclerView.setAdapter(mIngredientsAdapter);
+
+        //Display Recipe Information
+
         String selection = "_ID = ?";
         String[] selectionArgs1 = { "" + recipeID };
         Cursor myCursor = recipeProvider.query(
@@ -219,6 +233,7 @@ public class RecipeActivity extends AppCompatActivity {
                 "_ID");
         myCursor.moveToFirst();
         RecipeName = myCursor.getString(1);
+        setTitle(RecipeName + " Recipe");
 
         selection = "recipeID = ?";
         String [] selectionArgs2 = { "" + recipeID };
@@ -229,6 +244,7 @@ public class RecipeActivity extends AppCompatActivity {
                 selectionArgs2,
                 "_ID");
         myCursor.moveToFirst();
+        RecipeIngredients.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
             RecipeIngredients.add(myCursor.getString(1));
             myCursor.moveToNext();
@@ -243,6 +259,7 @@ public class RecipeActivity extends AppCompatActivity {
                 selectionArgs3,
                 "_ID");
         myCursor.moveToFirst();
+        RecipeSteps.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
             RecipeSteps.add(myCursor.getString(1) + " for " + myCursor.getString(2) + " seconds");
             myCursor.moveToNext();
@@ -395,6 +412,7 @@ public class RecipeActivity extends AppCompatActivity {
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);
+                    myIntent.putExtra("recipeID", recipeID);
                     RecipeActivity.this.startActivity(myIntent);
                 }
                 break;

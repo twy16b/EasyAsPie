@@ -43,10 +43,12 @@ public class StartTimerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d("StartTimerService", "onHandleIntent: Started Service");
         if (intent != null) {
             Bundle bundle = intent.getExtras();
             long time = bundle.getLong("time");
             String recipeName = bundle.getString("recipeName");
+            int recipeID = bundle.getInt("recipeID");
             int stepNumber = bundle.getInt("stepNumber");
 
             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -54,11 +56,12 @@ public class StartTimerService extends IntentService {
             Calendar calendar = Calendar.getInstance();
 
             long currtime = calendar.getTimeInMillis();
-            long alarmtime = currtime + time;
+            long alarmtime = currtime + time*1000;
 
             Intent i = new Intent(this, TimerReciever.class);
 
             i.putExtra("recipeName", recipeName);
+            i.putExtra("recipeID", recipeID);
             i.putExtra("stepNumber", stepNumber);
             i.putExtra("notificationId", currtime);
 
@@ -92,7 +95,7 @@ public class StartTimerService extends IntentService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext(), "Easy as Pie")
                     .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
                     .setContentTitle(recipeName)
-                    .setContentText("Step " + stepNumber + ": Timer rings at " + hour + ":" + minutestr)
+                    .setContentText("Step " + stepNumber+1 + ": Timer rings at " + hour + ":" + minutestr)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setOngoing(false)
                     .setOnlyAlertOnce(true);
