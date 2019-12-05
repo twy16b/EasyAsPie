@@ -1,7 +1,9 @@
 package edu.fsu.cs.easyaspie;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,23 +20,39 @@ public class TimerStepFragment extends Fragment {
     public TextView stepText;
     Button startTimerButton;
     String recipeName;
+    String stepDirections;
     int recipeID;
     int stepNumber;
     int seconds;
+    RecipesProvider recipeProvider;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_timer_step, container, false);
         stepText = v.findViewById(R.id.text_step);
+        recipeProvider = new RecipesProvider();
 
         //Get Arguments from RecipeSteps activity
         Bundle arguments = getArguments();
-        seconds = arguments.getInt("seconds");
         recipeName = arguments.getString("recipeName");
         recipeID = arguments.getInt("recipeID",0);
         stepNumber = arguments.getInt("stepNumber",0);
-        stepText.setText(arguments.getString("newStep") + " for " + seconds + " seconds");
+
+        String selection = "recipeID = ?";
+        String [] selectionArgs = { "" + recipeID };
+        final Cursor myCursor = recipeProvider.query(
+                RecipesProvider.StepsURI,
+                null,
+                selection,
+                selectionArgs,
+                "_ID");
+        myCursor.moveToPosition(stepNumber-1);
+        Log.d("TimerStepFragment", "onCreateView: stepNumber = " + stepNumber);
+        Log.d("TimerStepFragment", "onCreateView: recipeID = " + recipeID);
+        stepDirections = myCursor.getString(1);
+        stepText.setText(stepDirections);
+        seconds = myCursor.getInt(2);
 
         //Set button to start timer service
         startTimerButton = (Button) v.findViewById(R.id.button_timer);
@@ -73,26 +91,29 @@ public class TimerStepFragment extends Fragment {
                                 // right to left swipe detected
 
                                 // change fragment with next fragment
-                                // TODO: if (NEXT step exists) {
-                                Bundle arguments = new Bundle();
-                                String newStep = "Sample instruction";  // TODO: replace this with database query for NEXT step
-                                arguments.putString( "newStep" , newStep);
-                                    /* TODO: if (instruction includes timer) {
-                                        fragment = new TimerStepFragment();
-                                        String seconds = "60";                       // TODO: replace this with database query for seconds
-                                        arguments.putString( "seconds" , seconds);
-                                    // }
-                                    else { */
-                                fragment = new StandardStepFragment();
-                                //}
+                                if(stepNumber < myCursor.getCount()) {
+                                    myCursor.moveToNext();
+                                    Bundle arguments = new Bundle();
+                                    arguments.putString("recipeName", recipeName);
+                                    arguments.putInt("recipeID", recipeID);
+                                    arguments.putInt("stepNumber", stepNumber+1);
 
-                                fragment.setArguments(arguments);
-                                final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
-                                        R.anim.slide_in_right, R.anim.slide_out_left);
-                                ft.replace(R.id.fragment_container, fragment, null).addToBackStack(null).commit();
-                                // }
-                            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                                    int nextStepTime = myCursor.getInt(2);
+                                    if(nextStepTime > 0) {
+                                        fragment = new TimerStepFragment();
+                                    }
+                                    else {
+                                        fragment = new StandardStepFragment();
+                                    }
+
+                                    fragment.setArguments(arguments);
+                                    final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                                    ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
+                                            R.anim.slide_in_right, R.anim.slide_out_left);
+                                    ft.replace(R.id.fragment_container, fragment, null).addToBackStack(null).commit();
+                                }
+                            }
+                            else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                                     && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                                 // left to right swipe detected
                                 if(getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0){

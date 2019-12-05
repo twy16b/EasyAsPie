@@ -265,7 +265,8 @@ public class RecipeActivity extends AppCompatActivity {
         myCursor.moveToFirst();
         RecipeSteps.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
-            RecipeSteps.add(myCursor.getString(1) + " for " + myCursor.getString(2) + " seconds");
+            if (myCursor.getInt(2) > 0) RecipeSteps.add("Step " + (i+1) + ": " + myCursor.getString(1) + " for " + myCursor.getInt(2) + " seconds");
+            else RecipeSteps.add("Step " + (i+1) + ": " + myCursor.getString(1));
             myCursor.moveToNext();
         }
 

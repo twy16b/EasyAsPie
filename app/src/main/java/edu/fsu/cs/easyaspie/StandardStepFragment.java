@@ -1,4 +1,5 @@
 package edu.fsu.cs.easyaspie;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -16,14 +17,36 @@ import com.google.android.material.snackbar.Snackbar;
 public class StandardStepFragment extends Fragment {
     private Fragment fragment;
     private TextView stepText;
+    String recipeName;
+    String stepDirections;
+    int recipeID;
+    int stepNumber;
+    RecipesProvider recipeProvider;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO: load step from database
         final View v = inflater.inflate(R.layout.fragment_standard_step, container, false);
         stepText = v.findViewById(R.id.text_step);
-        stepText.setText(getArguments().getString("newStep"));
+        recipeProvider = new RecipesProvider();
+
+        Bundle arguments = getArguments();
+        recipeName = arguments.getString("recipeName");
+        recipeID = arguments.getInt("recipeID",0);
+        stepNumber = arguments.getInt("stepNumber",0);
+
+        String selection = "recipeID = ?";
+        String [] selectionArgs3 = { "" + recipeID };
+        final Cursor myCursor = recipeProvider.query(
+                RecipesProvider.StepsURI,
+                null,
+                selection,
+                selectionArgs3,
+                "_ID");
+        myCursor.moveToPosition(stepNumber-1);
+        stepDirections = myCursor.getString(1);
+        stepText.setText(stepDirections);
+
         // detect swipes
         final GestureDetector gesture = new GestureDetector(getActivity(),
                 new GestureDetector.SimpleOnGestureListener() {
@@ -45,26 +68,28 @@ public class StandardStepFragment extends Fragment {
                                 // right to left swipe detected
 
                                 // change fragment with next fragment
-                                // TODO: if (NEXT step exists) {
+                                if(stepNumber < myCursor.getCount()) {
+                                    myCursor.moveToNext();
                                     Bundle arguments = new Bundle();
-                                    String newStep = "Sample instruction";  // TODO: replace this with database query for NEXT step
-                                    arguments.putString( "newStep" , newStep);
-                                    /* TODO: if (instruction includes timer) {
+                                    arguments.putString("recipeName", recipeName);
+                                    arguments.putInt("recipeID", recipeID);
+                                    arguments.putInt("stepNumber", stepNumber+1);
+                                    int nextStepTime = myCursor.getInt(2);
+                                    if(nextStepTime > 0) {
                                         fragment = new TimerStepFragment();
-                                        String seconds = "60";                       // TODO: replace this with database query for seconds
-                                        arguments.putString( "seconds" , seconds);
-                                    // }
-                                    else { */
+                                    }
+                                    else {
                                         fragment = new StandardStepFragment();
-                                    //}
+                                    }
 
                                     fragment.setArguments(arguments);
                                     final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                                 ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
                                         R.anim.slide_in_right, R.anim.slide_out_left);
                                     ft.replace(R.id.fragment_container, fragment, null).addToBackStack(null).commit();
-                                // }
-                            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                                }
+                            }
+                                else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                                     && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                                 // left to right swipe detected
                                 if(getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0){

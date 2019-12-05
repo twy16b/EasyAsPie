@@ -19,8 +19,8 @@ public class RecipeSteps extends FragmentActivity {
     String recipeName;
     int recipeID;
     int stepNumber;
-    ArrayList<String> RecipeSteps;
-    int[] stepTimes;
+    String stepDirections;
+    int stepTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,9 +36,7 @@ public class RecipeSteps extends FragmentActivity {
         });
 
         recipeProvider = new RecipesProvider();
-        RecipeSteps = new ArrayList<>();
 
-        //Import steps into array
         Intent intent = getIntent();
         recipeName = intent.getStringExtra("recipeName");
         recipeID = intent.getIntExtra("recipeID", 0);
@@ -52,13 +50,10 @@ public class RecipeSteps extends FragmentActivity {
                 selection,
                 selectionArgs3,
                 "_ID");
-        myCursor.moveToFirst();
-        stepTimes = new int[myCursor.getCount()];
-        for(int i = 0; i < myCursor.getCount(); ++i) {
-            RecipeSteps.add(myCursor.getString(1));
-            stepTimes[i] = myCursor.getInt(2);
-            myCursor.moveToNext();
-        }
+        myCursor.moveToPosition(stepNumber-1);
+        stepDirections = myCursor.getString(1);
+        stepTime = myCursor.getInt(2);
+
 
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -72,12 +67,15 @@ public class RecipeSteps extends FragmentActivity {
             }
 
             Bundle arguments = new Bundle();
-            String newStep = RecipeSteps.get(stepNumber-1);
-            arguments.putString( "newStep" , newStep);
-            if(stepTimes[stepNumber-1] != 0) {
-            fragment = new TimerStepFragment();
-            int seconds = stepTimes[stepNumber-1];
-            arguments.putInt( "seconds" , seconds);
+            arguments.putString("recipeName", recipeName);
+            arguments.putInt("recipeID", recipeID);
+            arguments.putString( "stepDirections" , stepDirections);
+            arguments.putInt("stepNumber", stepNumber);
+
+            if(stepTime != 0) {
+                fragment = new TimerStepFragment();
+                int seconds = stepTime;
+                arguments.putInt( "seconds" , seconds);
             }
             else {
                 fragment = new StandardStepFragment();
