@@ -18,9 +18,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recipeProvider = new RecipesProvider();
+
+        //Empty any existing data
         recipeProvider.delete(RecipesProvider.RecipesURI, null, null);
         recipeProvider.delete(RecipesProvider.IngredientsURI, null, null);
         recipeProvider.delete(RecipesProvider.StepsURI, null, null);
+        recipeProvider.RecipesCount = 0;
+
+        //Load Example Data
         ContentValues newRecipe = new ContentValues();
         newRecipe.put("name", "Spaghetti");
         recipeProvider.insert(RecipesProvider.RecipesURI, newRecipe);
