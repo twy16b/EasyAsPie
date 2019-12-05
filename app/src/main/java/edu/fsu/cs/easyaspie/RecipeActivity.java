@@ -195,12 +195,11 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     public void startDisplayMode() {
-        setTitle(RecipeName + " Recipe");
         beginRecipe.setVisibility(beginRecipe.VISIBLE);
         addIngredient.setVisibility(addIngredient.GONE);
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
-        fab.setImageResource(android.R.drawable.ic_menu_edit);
+        fabRight.setImageResource(android.R.drawable.ic_menu_edit);
       
         layoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerView.setLayoutManager(layoutManager);
@@ -226,7 +225,7 @@ public class RecipeActivity extends AppCompatActivity {
                 "_ID");
         myCursor.moveToFirst();
         RecipeName = myCursor.getString(1);
-        textRecipeName.setText(RecipeName);
+        setTitle(RecipeName + " Recipe");
 
         selection = "recipeID = ?";
         String [] selectionArgs2 = { "" + recipeID };
@@ -237,6 +236,7 @@ public class RecipeActivity extends AppCompatActivity {
                 selectionArgs2,
                 "_ID");
         myCursor.moveToFirst();
+        RecipeIngredients.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
             RecipeIngredients.add(myCursor.getString(1));
             myCursor.moveToNext();
@@ -251,6 +251,7 @@ public class RecipeActivity extends AppCompatActivity {
                 selectionArgs3,
                 "_ID");
         myCursor.moveToFirst();
+        RecipeSteps.clear();
         for(int i = 0; i < myCursor.getCount(); ++i) {
             RecipeSteps.add(myCursor.getString(1) + " for " + myCursor.getString(2) + " seconds");
             myCursor.moveToNext();
