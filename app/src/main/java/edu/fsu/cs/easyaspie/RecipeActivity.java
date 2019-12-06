@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -98,6 +99,7 @@ public class RecipeActivity extends AppCompatActivity {
             );
             myCursor.moveToFirst();
             recipeID = myCursor.getInt(0)+1;
+            fabLeft.hide();
             startEditMode();
         }
         else{
@@ -117,6 +119,16 @@ public class RecipeActivity extends AppCompatActivity {
                                 String[] selectionArgs = {""+recipeID};
                                 recipeProvider.delete(
                                         RecipesProvider.RecipesURI,
+                                        selection,
+                                        selectionArgs);
+                                selection = "recipeID = ?";
+                                recipeProvider.delete(
+                                        RecipesProvider.IngredientsURI,
+                                        selection,
+                                        selectionArgs);
+                                selection = "recipeID = ?";
+                                recipeProvider.delete(
+                                        RecipesProvider.StepsURI,
                                         selection,
                                         selectionArgs);
                                 finish();
@@ -215,22 +227,10 @@ public class RecipeActivity extends AppCompatActivity {
         addStep.setVisibility(addStep.GONE);
         EditRecipeName.setVisibility(EditRecipeName.GONE);
         fabRight.setImageResource(android.R.drawable.ic_menu_edit);
+        fabLeft.show();
 
         IngredientsToInsert.clear();
         StepsToInsert.clear();
-
-        //Display Recipe Information
-        layoutManager = new LinearLayoutManager(this);
-        ingredientsRecyclerView.setLayoutManager(layoutManager);
-        RecipeInfoAdapter mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeIngredients);
-        ingredientsRecyclerView.addItemDecoration(new DividerItemDecoration(ingredientsRecyclerView.getContext(), layoutManager.getOrientation()));
-        ingredientsRecyclerView.setAdapter(mRecipeInfoAdapter);
-
-        layoutManager = new LinearLayoutManager(this);
-        stepsRecyclerView.setLayoutManager(layoutManager);
-        mRecipeInfoAdapter = new RecipeInfoAdapter(this, RecipeSteps);
-        stepsRecyclerView.addItemDecoration(new DividerItemDecoration(stepsRecyclerView.getContext(), layoutManager.getOrientation()));
-        stepsRecyclerView.setAdapter(mRecipeInfoAdapter);
 
         //Display Recipe Information
 
@@ -326,6 +326,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     newIngredientContent.put("recipeID", recipeID);
                                     IngredientsToInsert.add(newIngredientContent);
                                     RecipeIngredients.add(newIngredient);
+
                                     alertDialog.dismiss();
                                 }
                                 if (quantityInput.isEmpty()) {
@@ -426,6 +427,7 @@ public class RecipeActivity extends AppCompatActivity {
                 }
                 else {
                     Intent myIntent = new Intent(RecipeActivity.this, RecipeSteps.class);
+                    myIntent.putExtra("recipeName", RecipeName);
                     myIntent.putExtra("recipeID", recipeID);
                     RecipeActivity.this.startActivity(myIntent);
                 }
