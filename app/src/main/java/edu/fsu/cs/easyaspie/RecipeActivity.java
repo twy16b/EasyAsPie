@@ -89,7 +89,15 @@ public class RecipeActivity extends AppCompatActivity {
         recipeID = intent.getIntExtra("recipeID", 0);
         if (recipeID == 0) {
             //No recipe from intent, new recipe mode
-            recipeID = RecipesProvider.RecipesCount+1;
+            Cursor myCursor = recipeProvider.query(
+                    RecipesProvider.RecipesURI,
+                    null,
+                    null,
+                    null,
+                    "_ID DESC"
+            );
+            myCursor.moveToFirst();
+            recipeID = myCursor.getInt(0)+1;
             startEditMode();
         }
         else{
